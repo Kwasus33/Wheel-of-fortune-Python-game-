@@ -1,22 +1,34 @@
-from Passwords import Password, read_from_file
+from Words import Word, read_from_file
+from Utilities import clear_char
 import random
 
 
 class Wheel_of_fortune():
-    def __init__(self, passwords: list[Password] = None) -> None:
-        self._passwords = passwords if passwords else []
+    def __init__(self, words: list[Word] = None) -> None:
+        self._words = words if words else []
 
     @property
-    def passwords(self):
-        return self._passwords
+    def words(self):
+        return self._words
 
     def random_choice(self):
-        return random.choice(self.passwords)
+        return random.choice(self.words)
 
 
-wheel = Wheel_of_fortune(read_from_file('passwords.txt'))
+wheel = Wheel_of_fortune(read_from_file('words.txt'))
+drawn_word = wheel.random_choice()
+current_letter_repr = str(drawn_word.letter_representation())
 
-print(wheel.random_choice().password)
+while True:
+    print(current_letter_repr)
+    print(drawn_word.word)
+    letter = input(str())
+    cleared_letter = clear_char(letter)
+    print(cleared_letter)
+    info = drawn_word.update_letter_representation(current_letter_repr,
+                                                   cleared_letter)
+    print(info)
+    current_letter_repr = str(info)
 
 
 # password = Password('tuman luk')
