@@ -1,3 +1,17 @@
+from Words import Word
+
+
+def read_from_file(path):
+    words = []
+    with open(path, 'r') as file_handle:
+        for line in file_handle:
+            line = line.lstrip()
+            line = line.rstrip()
+            word = Word(line)
+            words.append(word)
+    return words
+
+
 def clear_char(letter: str):
     letter = str(letter)
     letter = letter.rstrip().lstrip()
@@ -11,6 +25,7 @@ def clear_letter_repr(current_letter_repr):
     current_letter_repr = str(current_letter_repr)
     current_letter_repr = current_letter_repr.rstrip().lstrip()
     return current_letter_repr
+
 
 # def guess_letter(self):
 #     self._current_letters_guess = ''

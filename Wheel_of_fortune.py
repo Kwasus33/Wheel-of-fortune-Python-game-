@@ -1,5 +1,5 @@
-from Words import Words, Word, read_from_file
-from Utilities import clear_char
+from Words import Words, Word
+from Utilities import clear_char, clear_letter_repr, read_from_file
 import random
 
 
@@ -21,8 +21,6 @@ wheel = Wheel_of_fortune(read_from_file('values.txt'))
 drawn_word = Words(read_from_file('words.txt')).random_choice()
 drawn_value = wheel.random_choice()
 current_letter_repr = str(drawn_word.letter_representation())
-print(current_letter_repr)
-current_letter_repr = str()
 
 
 print(drawn_value)
@@ -31,7 +29,7 @@ print(current_letter_repr)
 up = drawn_word.update_letter_representation(current_letter_repr, drawn_value)
 print(up)
 
-current_letter_repr = str(up)
+current_letter_repr = clear_letter_repr(up)
 wheel = Wheel_of_fortune(read_from_file('values.txt'))
 drawn_value = wheel.random_choice()
 print(drawn_value)

@@ -61,14 +61,3 @@ class Word():
         else:
             self._new_underscape_repr = str(current_letter_repr)
         return self._new_underscape_repr
-
-
-def read_from_file(path):
-    words = []
-    with open(path, 'r') as file_handle:
-        for line in file_handle:
-            line = line.lstrip()
-            line = line.rstrip()
-            word = Word(line)
-            words.append(word)
-    return words
