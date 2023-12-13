@@ -7,6 +7,11 @@ def clear_char(letter: str):
         return letter
 
 
+def clear_letter_repr(current_letter_repr):
+    current_letter_repr = str(current_letter_repr)
+    current_letter_repr = current_letter_repr.rstrip().lstrip()
+    return current_letter_repr
+
 # def guess_letter(self):
 #     self._current_letters_guess = ''
 #     for letter in self._password:

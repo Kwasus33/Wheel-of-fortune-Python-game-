@@ -1,9 +1,24 @@
+import random
+
+
 class EmptyWordError(Exception):
     pass
 
 
 class InvalidLetterValueError(Exception):
     pass
+
+
+class Words():
+    def __init__(self, words: list["Word"] = None) -> None:
+        self._words = words if words else []
+
+    @property
+    def words(self):
+        return self._words
+
+    def random_choice(self):
+        return random.choice(self.words)
 
 
 class Word():
@@ -39,12 +54,12 @@ class Word():
         self._new_underscape_repr = ''
         if guess_letter is not None:
             for pos, value in self._letter_pos:
-                if value == guess_letter and current_letter_repr[pos] == '_':
+                if guess_letter == value and current_letter_repr[pos] == '_':
                     self._new_underscape_repr += guess_letter
                 else:
                     self._new_underscape_repr += current_letter_repr[pos]
         else:
-            self._new_underscape_repr = str(self.letter_representation())
+            self._new_underscape_repr = str(current_letter_repr)
         return self._new_underscape_repr
 
 
