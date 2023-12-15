@@ -33,8 +33,6 @@ class Word():
             if letter != ' ':
                 self._letters_list.append(str(letter))
 
-        self._letter_pos = enumerate(self._word)
-
     @property
     def word(self):
         return self._word
@@ -51,13 +49,13 @@ class Word():
     def update_letter_representation(self, current_letter_repr: str,
                                      guess_letter: str = None) -> str:
         guess_letter = str(guess_letter)
-        self._new_underscape_repr = ''
+        new_underscape_repr = ''
         if guess_letter is not None:
-            for pos, value in self._letter_pos:
+            for pos, value in enumerate(self._word):
                 if guess_letter == value and current_letter_repr[pos] == '_':
-                    self._new_underscape_repr += guess_letter
+                    new_underscape_repr += guess_letter
                 else:
-                    self._new_underscape_repr += current_letter_repr[pos]
+                    new_underscape_repr += current_letter_repr[pos]
         else:
-            self._new_underscape_repr = str(current_letter_repr)
-        return self._new_underscape_repr
+            new_underscape_repr = str(current_letter_repr)
+        return new_underscape_repr
