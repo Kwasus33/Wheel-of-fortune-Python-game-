@@ -1,6 +1,6 @@
 from Wheel_of_fortune import Wheel_of_fortune
 from Words import Words
-from Utilities import read_from_file, clear_letter_repr, read_from_csv
+from Utilities import read_from_file, clear_word, read_from_csv
 
 
 if __name__ == "__main__":

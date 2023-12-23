@@ -33,19 +33,19 @@ class Word():
             raise EmptyWordError('Word have to be given')
 
         self._word = str(word)
-        self._letters_list = []
+        self._letters_set = set()
 
         for letter in self._word:
             if letter != ' ':
-                self._letters_list.append(str(letter))
+                self._letters_set.add(str(letter))
 
     @property
     def word(self):
         return self._word
 
     @property
-    def letters_list(self):
-        return self._letters_list
+    def letters_set(self):
+        return self._letters_set
 
     def letter_representation(self) -> str:
 
@@ -59,8 +59,8 @@ class Word():
 
         return self._underscape_repr
 
-    def update_letter_representation(self, current_letter_repr: str,
-                                     guess_letter: str = None) -> str:
+    def update_letter_repr(self, current_letter_repr: str,
+                           guess_letter: str = None) -> str:
 
         guess_letter = str(guess_letter)
         new_underscape_repr = ''

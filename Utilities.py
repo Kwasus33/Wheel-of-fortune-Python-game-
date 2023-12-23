@@ -6,12 +6,6 @@ class MalformedWheelOfFortuneDataError(Exception):
     pass
 
 
-class InvalidPersonError(Exception):
-    def __init__(self, tokens) -> None:
-        super().__init__("Invalid person data detected")
-        self.tokens = tokens
-
-
 def read_from_file(path):
     words = []
     with open(path, 'r') as file_handle:
@@ -25,16 +19,17 @@ def read_from_file(path):
 
 def read_from_csv(path):
     list_of_wheel_values = []
-    reader = csv.DictReader(path)
-    try:
-        for row in reader:
-            # if not row.values():
-            #     pass
-            key = row['key']
-            value = row['value']
-            list_of_wheel_values.append((key, value))
-    except csv.Error as e:
-        raise MalformedWheelOfFortuneDataError(str(e))
+    with open(path, 'r') as fh:
+        reader = csv.DictReader(fh)
+        try:
+            for row in reader:
+                # if len(row.values()) == 2:
+                #     pass
+                key = clear_word(row['key'])
+                value = clear_word(row['value'])
+                list_of_wheel_values.append((key, Word(value)))
+        except csv.Error as e:
+            raise MalformedWheelOfFortuneDataError(str(e))
     return list_of_wheel_values
 
 
@@ -42,18 +37,17 @@ def clear_char(letter: str):
     letter = str(letter)
     letter = letter.rstrip().lstrip()
     if len(letter) != 1:
-        return 'Given char is to long'
+        return 'Given letter is to long'
     else:
         return letter
 
 
-def clear_letter_repr(current_letter_repr):
-    current_letter_repr = str(current_letter_repr)
-    current_letter_repr = current_letter_repr.rstrip().lstrip()
+def clear_word(current_letter_repr):
+    current_letter_repr = str(current_letter_repr).rstrip().lstrip()
     return current_letter_repr
 
 
-"""Nie działa read_from_csv"""
+# """Już działa read_from_csv"""
 # list = read_from_csv('values.txt')
 # for obj in list:
 #     print(len(obj))

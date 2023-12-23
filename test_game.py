@@ -1,16 +1,16 @@
 import pytest
 from Words import Word, Words
-from Words import EmptyWordError, EmptyWordListError, InvalidLetterValueError
+from Words import EmptyWordError, EmptyWordListError
 
 
 def test_create_word():
     word = Word('koło fortuny')
     assert word.word == 'koło fortuny'
     letters_list = ['k', 'o', 'ł', 'o', 'f', 'o', 'r', 't', 'u', 'n', 'y']
-    assert word.letters_list == letters_list
+    assert (letter in letters_list for letter in word.letters_set)
     assert word.letter_representation() == '____ _______'
     starting_repr = word.letter_representation()
-    new_word_repr = word.update_letter_representation(starting_repr, 'ł')
+    new_word_repr = word.update_letter_repr(starting_repr, 'ł')
     assert new_word_repr == '__ł_ _______'
 
 
@@ -25,13 +25,13 @@ def test_create_Words_list():
     word3 = Word('fortuna')
     assert word1.word == 'gra'
     letters_list1 = ['g', 'r', 'a']
-    assert word1.letters_list == letters_list1
+    assert (letter in letters_list1 for letter in word1.letters_set)
     assert word2.word == 'koło'
     letters_list2 = ['k', 'o', 'ł', 'o']
-    assert word2.letters_list == letters_list2
+    assert (letter in letters_list2 for letter in word2.letters_set)
     assert word3.word == 'fortuna'
     letters_list3 = ['f', 'o', 'r', 't', 'u', 'n', 'a']
-    assert word3.letters_list == letters_list3
+    assert (letter in letters_list3 for letter in word3.letters_set)
 
     words = Words([word1, word2, word3])
     assert words.words == [word1, word2, word3]
