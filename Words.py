@@ -5,6 +5,10 @@ class EmptyWordError(Exception):
     pass
 
 
+class EmptyWordListError(Exception):
+    pass
+
+
 class InvalidLetterValueError(Exception):
     pass
 
@@ -12,6 +16,8 @@ class InvalidLetterValueError(Exception):
 class Words():
     def __init__(self, words: list["Word"] = None) -> None:
         self._words = words if words else []
+        if not self._words:
+            raise EmptyWordListError("List of Words to guess cannot be empty")
 
     @property
     def words(self):
@@ -24,7 +30,7 @@ class Words():
 class Word():
     def __init__(self, word: str) -> None:
         if not word:
-            return EmptyWordError('Password cannot be empty')
+            raise EmptyWordError('Word have to be given')
 
         self._word = str(word)
         self._letters_list = []
@@ -37,19 +43,28 @@ class Word():
     def word(self):
         return self._word
 
+    @property
+    def letters_list(self):
+        return self._letters_list
+
     def letter_representation(self) -> str:
+
         self._underscape_repr = ''
+
         for letter in self._word:
             if letter == ' ':
                 self._underscape_repr += ' '
             else:
                 self._underscape_repr += '_'
+
         return self._underscape_repr
 
     def update_letter_representation(self, current_letter_repr: str,
                                      guess_letter: str = None) -> str:
+
         guess_letter = str(guess_letter)
         new_underscape_repr = ''
+
         if guess_letter is not None:
             for pos, value in enumerate(self._word):
                 if guess_letter == value and current_letter_repr[pos] == '_':
@@ -58,4 +73,5 @@ class Word():
                     new_underscape_repr += current_letter_repr[pos]
         else:
             new_underscape_repr = str(current_letter_repr)
+
         return new_underscape_repr

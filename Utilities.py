@@ -1,4 +1,15 @@
 from Words import Word
+import csv
+
+
+class MalformedWheelOfFortuneDataError(Exception):
+    pass
+
+
+class InvalidPersonError(Exception):
+    def __init__(self, tokens) -> None:
+        super().__init__("Invalid person data detected")
+        self.tokens = tokens
 
 
 def read_from_file(path):
@@ -10,6 +21,21 @@ def read_from_file(path):
             word = Word(line)
             words.append(word)
     return words
+
+
+def read_from_csv(path):
+    list_of_wheel_values = []
+    reader = csv.DictReader(path)
+    try:
+        for row in reader:
+            # if not row.values():
+            #     pass
+            key = row['key']
+            value = row['value']
+            list_of_wheel_values.append((key, value))
+    except csv.Error as e:
+        raise MalformedWheelOfFortuneDataError(str(e))
+    return list_of_wheel_values
 
 
 def clear_char(letter: str):
@@ -27,40 +53,7 @@ def clear_letter_repr(current_letter_repr):
     return current_letter_repr
 
 
-# def guess_letter(self):
-#     self._current_letters_guess = ''
-#     for letter in self._password:
-#         if letter == self._password[-1]:
-#             if letter in self._letters_list:
-#                 self._current_letters_guess += str(letter)
-#             else:
-#                 self._current_letters_guess += '_'
-#         else:
-#             if letter in self._letters_list:
-#                 self._current_letters_guess += f'{str(letter)} '
-#             else:
-#                 self._current_letters_guess += '_ '
-
-
-# def insert_guessed_letter(self, guess_letter):
-#     guess_letter = str(guess_letter)
-#     if not guess_letter:
-#         raise InvalidLetterValueError('Invalid letter value was given')
-#     if guess_letter in self._letters_list:
-#         for pos, value in self._letter_pos:
-#             if str(guess_letter) == value:
-#                 to_replace = self._underscape_repr[pos]
-#                 self._underscape_repr = self._underscape_repr.replace(
-#                     to_replace, guess_letter)
-#         self._letters_list.remove(guess_letter)
-#     return self._underscape_repr
-
-
-# gdyby nie usuwanie litery ze słownika liter
-# i sprawdzania jej obecności w pierwszym if, byłaby sytuacja:
-# jeżeli litera występuje wielokrotnie
-# to za pierwszym razem ją podmienia
-# a potem przy następnych obrotach,
-# gdy ją napotka, powtarza podmianę
-# jest to nieefektywne, zajmuje pamięć
-# i niepotrzebnie zwiększa złożoność
+"""Nie działa read_from_csv"""
+# list = read_from_csv('values.txt')
+# for obj in list:
+#     print(len(obj))
