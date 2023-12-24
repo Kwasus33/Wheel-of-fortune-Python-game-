@@ -8,8 +8,8 @@ def test_create_word():
     assert word.word == 'koło fortuny'
     letters_list = ['k', 'o', 'ł', 'o', 'f', 'o', 'r', 't', 'u', 'n', 'y']
     assert (letter in letters_list for letter in word.letters_set)
-    assert word.letter_representation() == '____ _______'
-    starting_repr = word.letter_representation()
+    assert word.letter_repr() == '____ _______'
+    starting_repr = word.letter_repr()
     new_word_repr = word.update_letter_repr(starting_repr, 'ł')
     assert new_word_repr == '__ł_ _______'
 
