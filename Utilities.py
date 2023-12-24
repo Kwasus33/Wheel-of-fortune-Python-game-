@@ -37,7 +37,11 @@ def clear_char(letter: str):
     letter = str(letter)
     letter = letter.rstrip().lstrip()
     if len(letter) != 1:
-        return 'Given letter is to long'
+        # try:
+        #     letter = int(letter)
+        #     return 'Given number is out of range'
+        # except TypeError:
+        return 'Given character is to long'
     else:
         return letter
 
@@ -45,9 +49,3 @@ def clear_char(letter: str):
 def clear_word(current_letter_repr):
     current_letter_repr = str(current_letter_repr).rstrip().lstrip()
     return current_letter_repr
-
-
-# """Już działa read_from_csv"""
-# list = read_from_csv('values.txt')
-# for obj in list:
-#     print(len(obj))

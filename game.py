@@ -1,9 +1,14 @@
-from Words import Word, Words
+from Words import Words
 from Wheel_of_fortune import Wheel_of_fortune
 from Utilities import read_from_file, read_from_csv, clear_char
 
 
-class Round():
+class Player():
+    def __init__(self, idx: int = None) -> None:
+        self._idx = idx
+
+
+class GameRound():
     def __init__(self) -> None:
         pass
 
