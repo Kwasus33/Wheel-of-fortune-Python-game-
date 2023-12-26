@@ -1,6 +1,11 @@
 import pytest
 from Words import Word, Words
 from Words import EmptyWordError, EmptyWordListError
+from Wheel_of_fortune import Wheel_of_fortune
+from Wheel_of_fortune import EmptyWheelOfFortuneError, Wheel_data
+from Utilities import read_from_csv, read_from_file_v2
+from io import StringIO
+import random
 
 
 def test_create_word():
@@ -41,3 +46,30 @@ def test_create_Words_list():
 def test_create_empty_Words_list():
     with pytest.raises(EmptyWordListError):
         Words([])
+
+
+def test_read_from_csv():
+    fh = StringIO('key,value\nmoney,150\nsurprise,NAGRODA\n')
+    values_list = read_from_csv(fh)
+    assert len(values_list) == 2
+    assert values_list[1][0] == 'surprise'
+    assert values_list[1][1].word == 'NAGRODA'
+
+
+def test_read_from_file():
+    fh = StringIO('bocian\nwygrana\npolonez\nfiat 125\nkoniec\n')
+    words_list = ['bocian', 'wygrana', 'polonez', 'fiat 125', 'koniec']
+    words = read_from_file_v2(fh)
+    assert random.choice(words).word in words_list
+
+
+def test_create_wheel_of_fortune():
+    fh = StringIO('key,value\nmoney,150\nsurprise,NAGRODA\n')
+    values_list = read_from_csv(fh)
+    wheel = Wheel_of_fortune(values_list)
+    assert wheel.random_choice() in wheel.values
+
+
+def test_create_empty_wheel_of_fortune():
+    with pytest.raises(EmptyWheelOfFortuneError):
+        Wheel_of_fortune()

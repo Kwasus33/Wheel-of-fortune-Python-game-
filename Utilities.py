@@ -6,6 +6,16 @@ class MalformedWheelOfFortuneDataError(Exception):
     pass
 
 
+def read_from_file_v2(fh):
+    words = []
+    for line in fh:
+        line = line.lstrip()
+        line = line.rstrip()
+        word = Word(line)
+        words.append(word)
+    return words
+
+
 def read_from_file(path):
     words = []
     with open(path, 'r') as file_handle:
@@ -17,19 +27,18 @@ def read_from_file(path):
     return words
 
 
-def read_from_csv(path):
+def read_from_csv(fh):
     list_of_wheel_values = []
-    with open(path, 'r') as fh:
-        reader = csv.DictReader(fh)
-        try:
-            for row in reader:
-                # if len(row.values()) == 2:
-                #     pass
-                key = clear_word(row['key'])
-                value = clear_word(row['value'])
-                list_of_wheel_values.append((key, Word(value)))
-        except csv.Error as e:
-            raise MalformedWheelOfFortuneDataError(str(e))
+    reader = csv.DictReader(fh)
+    try:
+        for row in reader:
+            # if len(row.values()) == 2:
+            #     pass
+            key = clear_word(row['key'])
+            value = clear_word(row['value'])
+            list_of_wheel_values.append((key, Word(value)))
+    except csv.Error as e:
+        raise MalformedWheelOfFortuneDataError(str(e))
     return list_of_wheel_values
 
 

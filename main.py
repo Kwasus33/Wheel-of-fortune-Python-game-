@@ -1,8 +1,8 @@
-from game import Player, GameMenu, GameRound, Final
-from Words import Words
-from Wheel_of_fortune import Wheel_of_fortune
+from game import GameMenu, GameRound, Final
 # from Words import Words
-from Utilities import clear_word, read_from_file, read_from_csv
+# from Wheel_of_fortune import Wheel_of_fortune
+# from Words import Words
+from Utilities import clear_word
 
 
 def main():
@@ -19,6 +19,8 @@ def main():
     menu = GameMenu(n)
     players = menu.get_players
     words, wheel = menu.game_items()
+    GameRound()
+    Final()
 
 
 if __name__ == "__main__":
