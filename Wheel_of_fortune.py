@@ -20,6 +20,6 @@ class Wheel_of_fortune():
     def values(self):
         return self._values
 
-    def random_choice(self) -> str:
+    def spin_wheel(self) -> str:
         value = random.choice(self.values)
         return value

@@ -16,15 +16,15 @@ def read_from_file_v2(fh):
     return words
 
 
-def read_from_file(path):
-    words = []
-    with open(path, 'r') as file_handle:
-        for line in file_handle:
-            line = line.lstrip()
-            line = line.rstrip()
-            word = Word(line)
-            words.append(word)
-    return words
+# def read_from_file(path):
+#     words = []
+#     with open(path, 'r') as file_handle:
+#         for line in file_handle:
+#             line = line.lstrip()
+#             line = line.rstrip()
+#             word = Word(line)
+#             words.append(word)
+#     return words
 
 
 def read_from_csv(fh):

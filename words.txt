@@ -1,7 +1,8 @@
-hej
-looknij  
-  tutaj
-ziomek
-fajny
- projekt
-przygotowuje
+category,word
+kategoria,hej
+kategoria,looknij
+kategoria,  tutaj
+kategoria,ziomek
+kategoria,fajny
+kategoria, projekt
+kategoria,przygotowuje

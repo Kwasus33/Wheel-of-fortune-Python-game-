@@ -18,8 +18,9 @@ def main():
 
     menu = GameMenu(n)
     players = menu.get_players
-    words, wheel = menu.game_items()
-    GameRound()
+    words = menu.get_words()
+    word = words.draw_word()
+    GameRound(players, word)
     Final()
 
 

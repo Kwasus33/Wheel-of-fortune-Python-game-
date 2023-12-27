@@ -29,7 +29,7 @@ class Words():
         """
         return self._words
 
-    def random_choice(self):
+    def draw_word(self):
         """
 
         """
@@ -44,12 +44,15 @@ class Word():
         if not word:
             raise EmptyWordError('Word have to be given')
 
-        self._word = str(word)
-        self._letters_set = set()
+        self._word = str(word).upper()
+        self._letters_dict = {}
 
         for letter in self._word:
             if letter != ' ':
-                self._letters_set.add(str(letter))
+                if letter not in self._letters_dict:
+                    self._letters_dict[str(letter)] = 1
+                else:
+                    self._letters_dict[str(letter)] += 1
 
     @property
     def word(self):
@@ -59,11 +62,11 @@ class Word():
         return self._word
 
     @property
-    def letters_set(self):
+    def letters_dict(self):
         """
 
         """
-        return self._letters_set
+        return self._letters_dict
 
     def letter_repr(self) -> str:
         """
@@ -82,7 +85,7 @@ class Word():
         """
 
         """
-        guess_letter = str(guess_letter)
+        guess_letter = str(guess_letter).upper()
         new_underscape_repr = ''
         if guess_letter is not None:
             for pos, value in enumerate(self._word):
