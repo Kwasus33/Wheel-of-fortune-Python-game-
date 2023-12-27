@@ -1,32 +1,15 @@
+from player import Player
 from Words import Words, Word
 from Wheel_of_fortune import Wheel_of_fortune
 from Utilities import clear_char
 from database import Database
 
 
-class Player():
-    def __init__(self, idx: int = None) -> None:
-        self._id = idx
-        self._balance = 0
-
-    @property
-    def id(self):
-        return self._id
-
-    def balance(self):
-        return self._balance
-
-    def set_balance(self, amount):
-        self._balance = amount
-
-    def add_to_balance(self, amount):
-        self._balance += amount
-
-
 class GameMenu():
-    def __init__(self, path: str, num_of_players: int = 0) -> None:
+    def __init__(self, path: str, num_of_players: int = 1) -> None:
         self._players_num = num_of_players
         self._path = path
+        self._words = Words(Database().load_from_file(self._path))
 
     @property
     def get_players(self) -> list:
@@ -35,19 +18,28 @@ class GameMenu():
             players.append(Player(idx+1))
         return players
 
-    def get_words(self) -> Words:
-        return Words(Database().load_from_file(self._path))
+    def words(self) -> Words:
+        return self._words
 
     def get_wheel_of_forune(self) -> Wheel_of_fortune:
         return Wheel_of_fortune(Database().load_from_file('values.txt'))
 
+    def get_word(self):
+        word = self._words.draw_word()
+        self._words.words.remove(word)
+        return word
+
 
 class GameRound():
-    def __init__(self, players: list["Player"], word: Word) -> None:
+    def __init__(self, players: list["Player"],
+                 word: Word,
+                 wheel: Wheel_of_fortune) -> None:
         self._players = players
-        self._word = word
-        self.word_repr = self._word.letter_repr
-        self._wheel = GameMenu().get_wheel_of_forune()
+        self._word_object = word
+        self.category = word.category
+        self.word = word.word
+        self.word_repr = word.letter_repr()
+        self._wheel = wheel
         self._numb_of_players = len(self._players)
 
     @property
@@ -63,39 +55,38 @@ class GameRound():
         """
 
         """
-        print(int(value.word))
-        print("Press T if u want to buy a vocal, else any other button")
-        answer = clear_char(input(str())).upper()
+        print(int(value))
+        if player.balance() > 200:
+            print("Press T if u want to buy a vocal, else any other button")
+            answer = clear_char(input(str())).upper()
+        else:
+            print("You cannot buy a vocal")
+            answer = None
+
         if answer == 'T':
             letter = self.buy_vocal(player)
             if letter in letters_in_word:
-                self.word_repr = self._word.update_letter_repr(self.word_repr,
-                                                               letter)
+                self.word_repr = self._word_object.update_letter_repr(
+                    self.word_repr, letter)
                 letters_in_word.pop(letter)
         else:
             letter = clear_char(input(str())).upper()
             if letter in letters_in_word:
-                self.word_repr = self._word.update_letter_repr(self.word_repr, letter)
-                amount = letters_in_word[letter]*int(value.word)
+                self.word_repr = self._word_object.update_letter_repr(
+                    self.word_repr, letter)
+                amount = letters_in_word[letter] * value
                 player.add_to_balance(amount)
                 letters_in_word.pop(letter)
-                # player to ma być obiekt klasy Player, zawodnik który aktualnie zgaduje
+                # player to ma być obiekt klasy Player,
+                # zawodnik który aktualnie zgaduje
         return letters_in_word
-
-    def BANKRUT(self):
-        pass
-
-    def NAGRODA(self):
-        pass
-
-    def STOP(self):
-        pass
 
     def play(self):
 
-        letters_in_word = self._word.letters_dict
-        print(self._word.letter_repr)
+        letters_in_word = self._word_object.letters_dict
+        self.word_repr = self._word_object.letter_repr()
         id = 0
+        print(self.word_repr)
 
         # while '_' in word_repr
         while letters_in_word:
@@ -105,25 +96,32 @@ class GameRound():
 
             print(f'Player {player.id} turn')
             print('Press anhy button to spin the wheel')
+            input()
+            wheel_item = self._wheel.spin_wheel()
+            value = wheel_item.word
+            # wheel_item is instance of word class
 
-            key, value = self._wheel.spin_wheel()
-            # value is instance of word class
-
-            if key == 'money':
-                letters_in_word = self.GET_MONEY(value,
-                                                 letters_in_word,
-                                                 player)
-            elif value.word == 'BANKRUT':
-                print(value.word)
+            if value == 'BANKRUT':
+                print(value)
                 player.set_balance(0)
                 id += 1
-            elif value.word == 'NAGRODA':
-                print(value.word)
-                # losowanie nazwy nagrody z pliku i dodawanie do listy nagród gracza
-            elif value.word == 'STOP':
-                print(value.word)
+            elif value == 'NAGRODA':
+                print(value)
+                # losowanie nazwy nagrody z pliku i
+                # dodawanie do listy nagród gracza
+            elif value == 'STOP':
+                print(value)
                 id += 1
                 # gracz traci kolejkę
+            else:
+                letters_in_word = self.GET_MONEY(int(value),
+                                                 letters_in_word,
+                                                 player)
+
+            print(self.word_repr)
+
+        for player in self._players:
+            print(player.balance())
 
 
 class Final():

@@ -16,11 +16,12 @@ def main():
         except TypeError:
             print('Value have to be a number between 2 - 6')
 
-    menu = GameMenu(n)
+    menu = GameMenu('words.txt', n)
     players = menu.get_players
-    words = menu.get_words()
-    word = words.draw_word()
-    GameRound(players, word)
+    word = menu.get_word()
+    wheel = menu.get_wheel_of_forune()
+    round = GameRound(players, word, wheel)
+    round.play()
     Final()
 
 

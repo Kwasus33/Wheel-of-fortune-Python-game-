@@ -29,7 +29,7 @@ class Words():
         """
         return self._words
 
-    def draw_word(self):
+    def draw_word(self) -> "Word":
         """
 
         """
@@ -37,7 +37,7 @@ class Words():
 
 
 class Word():
-    def __init__(self, word: str) -> None:
+    def __init__(self, word: str, category: str = None) -> None:
         """
 
         """
@@ -45,6 +45,7 @@ class Word():
             raise EmptyWordError('Word have to be given')
 
         self._word = str(word).upper()
+        self._category = str(category)
         self._letters_dict = {}
 
         for letter in self._word:
@@ -60,6 +61,10 @@ class Word():
 
         """
         return self._word
+
+    @property
+    def category(self):
+        return self._category
 
     @property
     def letters_dict(self):

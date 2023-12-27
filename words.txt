@@ -1,8 +1,8 @@
-category,word
+key,value
 kategoria,hej
 kategoria,looknij
-kategoria,  tutaj
+kategoria,tutaj
 kategoria,ziomek
 kategoria,fajny
-kategoria, projekt
+kategoria,projekt
 kategoria,przygotowuje

@@ -52,8 +52,8 @@ def test_read_from_csv():
     fh = StringIO('key,value\nmoney,150\nsurprise,NAGRODA\n')
     values_list = read_from_csv(fh)
     assert len(values_list) == 2
-    assert values_list[1][0] == 'surprise'
-    assert values_list[1][1].word == 'NAGRODA'
+    assert values_list[1].category == 'surprise'
+    assert values_list[1].word == 'NAGRODA'
 
 
 def test_create_wheel_of_fortune():

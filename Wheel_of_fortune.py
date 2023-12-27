@@ -11,7 +11,7 @@ class Wheel_data():
 
 
 class Wheel_of_fortune():
-    def __init__(self, values: list[(str, "Word")] = None) -> None:
+    def __init__(self, values: list["Word"] = None) -> None:
         self._values = values if values else []
         if not values:
             raise EmptyWheelOfFortuneError("Wheel of fortune cannot be empty")
@@ -20,6 +20,5 @@ class Wheel_of_fortune():
     def values(self):
         return self._values
 
-    def spin_wheel(self) -> str:
-        value = random.choice(self.values)
-        return value
+    def spin_wheel(self) -> "Word":
+        return random.choice(self.values)

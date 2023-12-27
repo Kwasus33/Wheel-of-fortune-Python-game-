@@ -26,6 +26,7 @@ class Database():
                     self.people = read_from_json(file_handle)
                 else:
                     self.people = read_from_csv(file_handle)
+            return self.people
         except FileNotFoundError:
             raise PersonPathNotFound("Could not open person database")
         except PermissionError:
