@@ -1,6 +1,11 @@
 import random
 
 
+VOCALS = ['A', 'Ą', 'E', 'Ę', 'I', 'O', 'Ó', 'U', 'Y']
+CONSONANTS = ['B', 'C', 'Ć', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'Ł', 'M', 'N',
+              'Ń', 'P', 'R', 'S', 'Ś', 'T', 'W', 'V', 'X', 'Y', 'Z', 'Ź', 'Ż']
+
+
 class EmptyWordError(Exception):
     pass
 
@@ -46,14 +51,6 @@ class Word():
 
         self._word = str(word).upper()
         self._category = str(category).upper()
-        self._letters_dict = {}
-
-        for letter in self._word:
-            if letter != ' ':
-                if letter not in self._letters_dict:
-                    self._letters_dict[str(letter)] = 1
-                else:
-                    self._letters_dict[str(letter)] += 1
 
     @property
     def word(self):
@@ -66,22 +63,14 @@ class Word():
     def category(self):
         return self._category
 
-    @property
-    def letters_dict(self):
-        """
-
-        """
-
-        return self._letters_dict
-
     def letter_repr(self) -> str:
         """
 
         """
         self._underscape_repr = ''
         for letter in self._word:
-            if letter == ' ':
-                self._underscape_repr += ' '
+            if letter not in CONSONANTS and letter not in VOCALS:
+                self._underscape_repr += letter
             else:
                 self._underscape_repr += '_'
         return self._underscape_repr

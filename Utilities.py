@@ -13,11 +13,11 @@ def read_from_json(fh):
 def read_from_csv(fh):
     list_of_values = []
     reader = csv.DictReader(fh)
+    key = None
     try:
         for row in reader:
-            # if len(row.values()) == 2:
-            #     pass
-            key = clear_word(row['key'])
+            if 'key' in row.keys():
+                key = clear_word(row['key'])
             value = clear_word(row['value'])
             list_of_values.append(Word(value, key))
     except csv.Error as e:
@@ -29,10 +29,6 @@ def clear_char(letter: str):
     letter = str(letter)
     letter = letter.rstrip().lstrip()
     if len(letter) != 1:
-        # try:
-        #     letter = int(letter)
-        #     return 'Given number is out of range'
-        # except TypeError:
         return 'Given character is to long'
     else:
         return letter

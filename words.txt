@@ -1,8 +1,18 @@
 key,value
-kategoria,hej
-kategoria,looknij
-kategoria,tutaj
-kategoria,ziomek
-kategoria,fajny
-kategoria,projekt
-kategoria,przygotowuje
+Miasta,Wagadugu
+Miasta,Jamasukro
+Miasta,Pretoria
+Miasta,Windhuk
+Miasta,Dżibuti
+Miasta,Rangun
+Miasta,Caracas
+Miasta,Ndżamena
+Miasta,Niamej
+Miasta,Bissau
+Państwa,Vanuatu
+Państwa,Rep. Wysp Zielonego Przylądka
+Państwa,Indonezja
+Państwa,Republika środkowo Afrykańska
+Państwa,Jamajka
+Państwa,Wenezuela
+Państwa,Boliwia

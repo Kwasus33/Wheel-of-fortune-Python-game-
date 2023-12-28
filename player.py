@@ -3,6 +3,7 @@ class Player():
         self._id = idx
         self._balance = 0
         self.rewards = []
+        self._total_balance = 0
 
     @property
     def id(self):
@@ -22,3 +23,9 @@ class Player():
 
     def add_to_balance(self, amount=0):
         self._balance += int(amount)
+
+    def total_balance(self):
+        return self._total_balance
+
+    def add_to_total_balance(self, amount=0):
+        self._total_balance += int(amount)
