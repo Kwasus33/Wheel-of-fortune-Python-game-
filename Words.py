@@ -45,7 +45,7 @@ class Word():
             raise EmptyWordError('Word have to be given')
 
         self._word = str(word).upper()
-        self._category = str(category)
+        self._category = str(category).upper()
         self._letters_dict = {}
 
         for letter in self._word:
@@ -71,6 +71,7 @@ class Word():
         """
 
         """
+
         return self._letters_dict
 
     def letter_repr(self) -> str:
