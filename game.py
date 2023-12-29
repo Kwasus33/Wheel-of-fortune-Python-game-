@@ -90,12 +90,34 @@ class GameRound():
             good_guess = False
         return good_guess
 
-    def buy_vocal(self, player):
+    def choose_vocal(self, player):
         # muszę jakoś zabezpieczyć żeby
         # litera podawana była samogłoską
         player.add_to_balance(-200)
         good_guess = self.guess_letter(player)
         return good_guess
+
+    def buy_vocal(self, player):
+        if player.balance() > 200:
+            good_guess = self.choose_vocal(player)
+            answer = None
+            # setting answer to empty string allows player
+            # to chose different option in every loop
+        else:
+            while answer not in ['S', 'G']:
+                print("You do not have enough money to buy a vocal")
+                print("Press S if u want to spin a wheel" + '\n' +
+                      "Press G if u want to guess the word")
+                answer = clear_char(input(str())).upper()
+        return answer, good_guess
+
+    def choose_action(self, answer):
+        while answer not in ['B', 'S', 'G']:
+            print("Press B if u want to buy a vocal" + '\n' +
+                  "Press S if u want to spin a wheel" + '\n' +
+                  "Press G if u want to guess the word" + '\n')
+            answer = clear_char(input(str())).upper()
+        return answer
 
     def win_money(self, value, player):
         """
@@ -103,52 +125,32 @@ class GameRound():
         """
         print(self.word_repr)
         good_guess = self.guess_letter(player, value)
-        answer = ''
+        answer = None
 
         while good_guess:
             # if all letters are guessed - self.letters_to_guess is empty
             # loop ends and func returns
-
             print(self.word_repr)
+
             if self.letters_to_guess:
 
-                while answer not in ['B', 'S', 'G']:
-                    print("Press B if u want to buy a vocal" + '\n' +
-                          "Press S if u want to spin a wheel" + '\n' +
-                          "Press G if u want to guess the word" + '\n')
-                    answer = clear_char(input(str())).upper()
+                answer = self.choose_action(answer)
 
                 if answer == 'B':
-                    if player.balance() > 200:
-                        good_guess = self.buy_vocal(player)
-                        answer = ''
-                        # setting answer to empty string allows player
-                        # to chose different option in every loop
-                    else:
-                        while answer not in ['S', 'G']:
-                            print("You do not have enough money to buy a vocal")
-                            print("Press S if u want to spin a wheel" + '\n' +
-                                  "Press G if u want to guess the word")
-                            answer = clear_char(input(str())).upper()
+                    answer, good_guess = self.buy_vocal(player)
+                    # jeśli tu będzie good_guess = false to zostanie zwrócone
+                    # false po wyjściu z pętli while good_guess
 
                 elif answer == 'G':
                     return self.guess_word(good_guess)
-                    # word_guess = clear_word(input(str('Guess the word'))).upper()
-                    # if word_guess == self.word:
-                    #     print('Your guess is correct, you win the round')
-                    #     self.letters_to_guess = {}
-                    #     self.word_repr = self.word
-                    # else:
-                    #     print('Your guess is not correct')
-                    #     good_guess = False
-                    # return good_guess
 
                 else:
                     # returns True if player wants to spin the wheel,
                     # it returns to play(), where spin is held
                     return good_guess
 
-            return good_guess
+            else:
+                return good_guess
 
         return good_guess
         # returns only (if) good_guess = False
@@ -166,19 +168,18 @@ class GameRound():
             player = self._players[id]
 
             print(f'Player {player.id} turn')
-            print('Press anhy button to spin the wheel')
+            print('Press any button to spin the wheel')
             input()
 
             wheel_item = self._wheel.spin_wheel()
             value = wheel_item.word
             # wheel_item is instance of word class
+            print(value)
 
             if value == 'BANKRUT':
-                print(value)
                 player.set_balance(0)
                 id += 1
             elif value == 'STOP':
-                print(value)
                 id += 1
                 # gracz traci kolejkę
             else:
@@ -188,6 +189,31 @@ class GameRound():
                 # jeśli nie to ponownie kręci kołem
 
             print(self.word_repr)
+
+        print('\n' + "There's no more consonants in the word" + '\n')
+
+        while self.word_repr != self.word:
+
+            id = (id % len(self._players))
+            player = self._players[id]
+
+            print(f'Player {player.id} turn')
+
+            answer = None
+            while answer not in ['B', 'G']:
+                print("Press B if u want to buy a vocal" + '\n' +
+                      "Press G if u want to guess the word" + '\n')
+                answer = clear_char(input(str())).upper()
+
+            if answer == 'B':
+                answer, good_guess = self.buy_vocal(player)
+                if not good_guess:
+                    id += 1
+
+            elif answer == 'G':
+                # self.guess_word() returns false if gueesed word is incorect
+                if not self.guess_word(good_guess):
+                    id += 1
 
         player.add_to_total_balance(player.balance())
 
