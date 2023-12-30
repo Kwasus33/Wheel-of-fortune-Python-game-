@@ -5,7 +5,8 @@ from Utilities import clear_char, clear_word
 from database import Database
 from Words import CONSONANTS, VOCALS
 import random
-import inputimeout
+import pytimedinput
+# import threading
 
 
 class GameMenu():
@@ -84,6 +85,13 @@ class GameRound():
         letter = self.insert_Vocal_or_Consonant(value)
 
         if letter in self.word:
+
+            # prowizoryczny kod
+            if value is not None and letter not in self.letters_to_guess:
+                print('Consonant have been already given. You loose a turn')
+                return False
+            # uniemożliwiający sprawdzanie wielokrotnie tej samej spółgłoski
+
             good_guess = True
             self.word_repr = self._word_object.update_letter_repr(
                 self.word_repr, letter)
@@ -232,7 +240,7 @@ class GameRound():
 
             elif answer == 'G':
                 # self.guess_word() returns false if gueesed word is incorect
-                if not self.guess_word(good_guess):
+                if not self.guess_word():
                     id += 1
 
         player.add_to_total_balance(player.balance())
@@ -247,22 +255,55 @@ class GameRound():
             print(player.total_balance())
 
 
+# class Final(GameRound):
 class Final():
-    def __init__(self, best_player: Player, final_word: Word) -> None:
-        self._best_player = best_player
+    def __init__(self, players: list[Player], final_word: Word) -> None:
 
-        drawn_letters = random.choice(CONSONANTS, k=3)
-        drawn_letters = random.choice(VOCALS, k=2)
+        # super.__init__(players, final_word)
+        self._players = players
         self._word = final_word
+
+        drawn_letters = random.sample(CONSONANTS, 3) + random.sample(VOCALS, 2)
 
         self.drawn_letters = drawn_letters
 
+    def best_player(self):
+
+        best_players = []
+        players = sorted(self._players,
+                         key=lambda player: player.total_balance())
+        best_player = players.pop()
+        # bierze ostatni element z listy posortowanej rosnąco, czyli maksymalny
+        best_players.append(best_player)
+
+        for player in players:
+            if player.total_balance() == best_player.total_balance():
+                best_players.append(player)
+
+        if len(best_players) > 1:
+
+            best_players_with_most_gifts = []
+            most_gifts_list = sorted(best_players,
+                                     key=lambda player: len(player.reward()))
+            most_gifts_player = most_gifts_list.pop()
+            best_players_with_most_gifts.append(most_gifts_player)
+
+            for player in most_gifts_list:
+                if len(player.reward()) == len(most_gifts_player.reward()):
+                    best_players_with_most_gifts.append(player)
+
+            return best_players_with_most_gifts
+
+        return best_players
+
     def choose_letters_set(self):
+
         print(f'Drawn set of values is: {self.drawn_letters}')
         print('Choose first 3 consonants, then 1 vocal')
 
         for i in range(3):
-            letter = clear_char(input(str('Choose a consonant'))).upper()
+            info = 'first' if i == 0 else 'second' if i == 1 else 'third'
+            letter = clear_char(input(str(f'Choose {info} consonant'))).upper()
             while letter not in CONSONANTS:
                 print('Given invalid value - not a consonant')
                 letter = clear_char(input(str('Choose a consonant'))).upper()
@@ -276,27 +317,42 @@ class Final():
 
     def play_final(self) -> None:
 
+        best_players = self.best_player()
+        if len(best_players) != 1:
+            return "There is non best player. Final round can't be played"
+        best_player = best_players.pop()
+        print(f"Player {best_player.id} plays the Final Round")
+
         self.choose_letters_set()
         word_repr = self._word.letter_repr()
 
         for letter in self.drawn_letters:
             word_repr = self._word.update_letter_repr(word_repr, letter)
 
-        guess_word = None
-        try:
-            guess_word = str(clear_word(inputimeout(
-                prompt='You have 20 secunds to guess the word',
-                timeout=20))).upper()
+        print(self._word.category + '\n' + word_repr)
+        answer, timedOut = pytimedinput.timedInput(
+            prompt="You have 20 seconds to guess the word\n",
+            timeout=10)
+        answer = clear_word(str(answer)).upper()
+        if timedOut:
+            print("Time's up.")
+        print(f"Player's answer is: '{answer}'")
 
-            if guess_word == self._word.word:
-                print(f"You guessed correctly. The word is {guess_word}")
-                result = 'You won Polonez'
-                return result
-            else:
-                print("You didn't guess correctly")
+        # timeout = 20
+        # time = threading.Timer(timeout, print, ["Time's up!"])
+        # time.start()
+        # print(self._word.category + '\n' + word_repr)
+        # answer = clear_word(input(
+        #     str('You have 20 secunds to guess the word')
+        #     )).upper()
+        # time.cancel()
 
-        except Exception:
-            print("You've run out of time")
+        if answer == self._word.word:
+            print(f"You guessed correctly. The word is {self._word.word}")
+            result = 'You won Polonez'
 
-        result = 'You lost the final'
+        else:
+            print(f"You didn't guess the word. It is {self._word.word}")
+            result = 'You lost the final'
+
         return result

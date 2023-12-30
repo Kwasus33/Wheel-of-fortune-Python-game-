@@ -21,16 +21,29 @@ def main():
         word = menu.get_word()
         GameRound(players, word, wheel).play(idx)
 
-    Final()
+    # NAPRAWIONE - prosty kod uniemożliwiający to dla spółgłosek
+    # DO PRZEMYŚLENIA - samogłoski można podać wiele razy te same,
+    # za każdym razem gracz traci pieniądze a reprezentacja się nie zmienia
+    # NAPRAWA - dodając tablicę z odgadniętymi przez osoby literami
+    # i warunek szukania słowa póki '_' są w słowie można to łatwo naprawić
 
-    # for round in range(3):
-    #     for word_og in menu.check_words().words:
-    #         print(word_og.word)
-    #     word = menu.get_word()
-    #     print('\n' + word.word + '\n')
+    # gdy w zgadywanym słowie poda się drugi raz do odgadnięcia
+    # literę już odganiętą to
+    # amount = self.letters_to_guess[letter] * int(value)
+    # w funkcji guess_letter() wyrzuca key error
+    # bo litera została już usunięta z tablicy
+    # trzeba dodać tablicę z odganiętymi literami
 
-    # for word_og in menu.check_words().words:
-    #     print(word_og.word)
+    # w finale po upływie 20 sekund dalej trzeba podać jakąś wartość do inputa
+    # a powinna kończyć się funkcja z info o przegranej
+    # mechanizm znajdywania najlepszego gracza jest słaby i nie działa git
+
+    word = menu.get_word()
+    final = Final(players, word)
+    print(final.play_final())
+
+    # mogę dodać sprawdzenie żeby użytkownik nie mógł podać w finale
+    # liter które już zostały dla niego wylosowane lub sam podał
 
 
 if __name__ == "__main__":
