@@ -4,6 +4,8 @@ from Wheel_of_fortune import Wheel_of_fortune
 from Utilities import clear_char, clear_word
 from database import Database
 from Words import CONSONANTS, VOCALS
+import random
+import inputimeout
 
 
 class GameMenu():
@@ -55,14 +57,31 @@ class GameRound():
     def players(self):
         return self._players
 
+    def insert_Vocal_or_Consonant(self, value):
+
+        if value is None:
+            letter = clear_char(input(str())).upper()
+            while letter not in VOCALS:
+                print('Value is invalid. Give a vocal to guess')
+                letter = clear_char(input(str())).upper()
+
+        else:
+            letter = clear_char(input(str())).upper()
+            while letter not in CONSONANTS:
+                print('Value is invalid. Give a consonant to guess')
+                letter = clear_char(input(str())).upper()
+
+        return letter
+
     def guess_letter(self, player: Player, value=None):
 
         good_guess = False
-        consonant_info = f'{value}\nGuess a consonant'
+        consonant_info = 'Guess a consonant'
         vocal_info = 'Guess a vocal'
 
-        print(consonant_info) if value is not None else print(vocal_info)
-        letter = clear_char(input(str())).upper()
+        print(vocal_info) if value is None else print(consonant_info)
+
+        letter = self.insert_Vocal_or_Consonant(value)
 
         if letter in self.word:
             good_guess = True
@@ -79,10 +98,11 @@ class GameRound():
 
         return good_guess
 
-    def guess_word(self, good_guess):
+    def guess_word(self):
         word_guess = clear_word(input(str('Guess the word'))).upper()
         if word_guess == self.word:
             print('Your guess is correct, you win the round')
+            good_guess = True
             self.letters_to_guess = {}
             self.word_repr = self.word
         else:
@@ -107,7 +127,7 @@ class GameRound():
             while answer not in ['S', 'G']:
                 print("You do not have enough money to buy a vocal")
                 print("Press S if u want to spin a wheel" + '\n' +
-                      "Press G if u want to guess the word")
+                      "Press G if u want to guess the word" + '\n')
                 answer = clear_char(input(str())).upper()
         return answer, good_guess
 
@@ -123,7 +143,6 @@ class GameRound():
         """
 
         """
-        print(self.word_repr)
         good_guess = self.guess_letter(player, value)
         answer = None
 
@@ -142,7 +161,7 @@ class GameRound():
                     # false po wyjściu z pętli while good_guess
 
                 elif answer == 'G':
-                    return self.guess_word(good_guess)
+                    return self.guess_word()
 
                 else:
                     # returns True if player wants to spin the wheel,
@@ -159,8 +178,9 @@ class GameRound():
 
         id = idx % len(self._players)
         self.word_repr = self._word_object.letter_repr()
-        print(self._word_object.category)
-        print(self.word_repr)
+
+        print('\n' + self._word_object.category)
+        print(self.word_repr + '\n')
 
         while self.letters_to_guess:
 
@@ -188,7 +208,7 @@ class GameRound():
                 # jeśli zwróci false to znaczy że gracz traci kolejkę
                 # jeśli nie to ponownie kręci kołem
 
-            print(self.word_repr)
+            print(self.word_repr + '\n')
 
         print('\n' + "There's no more consonants in the word" + '\n')
 
@@ -217,10 +237,66 @@ class GameRound():
 
         player.add_to_total_balance(player.balance())
 
+        player_info = player.id
+
+        print(f'Player {player_info} wins the round')
+
         for player in self._players:
             player.set_balance(0)
+            print(f'Player {player.id}')
             print(player.total_balance())
 
 
 class Final():
-    pass
+    def __init__(self, best_player: Player, final_word: Word) -> None:
+        self._best_player = best_player
+
+        drawn_letters = random.choice(CONSONANTS, k=3)
+        drawn_letters = random.choice(VOCALS, k=2)
+        self._word = final_word
+
+        self.drawn_letters = drawn_letters
+
+    def choose_letters_set(self):
+        print(f'Drawn set of values is: {self.drawn_letters}')
+        print('Choose first 3 consonants, then 1 vocal')
+
+        for i in range(3):
+            letter = clear_char(input(str('Choose a consonant'))).upper()
+            while letter not in CONSONANTS:
+                print('Given invalid value - not a consonant')
+                letter = clear_char(input(str('Choose a consonant'))).upper()
+            self.drawn_letters.append(letter)
+
+        letter = clear_char(input(str('Choose a vocal'))).upper()
+        while letter not in VOCALS:
+            print('Given invalid value - not a vocal')
+            letter = clear_char(input(str('Choose a vocal'))).upper()
+        self.drawn_letters.append(letter)
+
+    def play_final(self) -> None:
+
+        self.choose_letters_set()
+        word_repr = self._word.letter_repr()
+
+        for letter in self.drawn_letters:
+            word_repr = self._word.update_letter_repr(word_repr, letter)
+
+        guess_word = None
+        try:
+            guess_word = str(clear_word(inputimeout(
+                prompt='You have 20 secunds to guess the word',
+                timeout=20))).upper()
+
+            if guess_word == self._word.word:
+                print(f"You guessed correctly. The word is {guess_word}")
+                result = 'You won Polonez'
+                return result
+            else:
+                print("You didn't guess correctly")
+
+        except Exception:
+            print("You've run out of time")
+
+        result = 'You lost the final'
+        return result
