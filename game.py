@@ -117,24 +117,30 @@ class GameRound():
             good_guess = False
         return good_guess
 
-    def choose_vocal(self, player):
+    def choose_vocal(self, player: Player):
         # muszę jakoś zabezpieczyć żeby
         # litera podawana była samogłoską
         player.add_to_balance(-200)
         good_guess = self.guess_letter(player)
         return good_guess
 
-    def buy_vocal(self, player):
+    def buy_vocal(self, player: Player, can_spin_wheel: bool = True):
+        answer = None
+        good_guess = True
+        # good_guess = True returns if bought vocal is correct
+        # or when player has not enough money to buy a vocal,
+        # in second situation player doesn't lose a turn
         if player.balance() > 200:
             good_guess = self.choose_vocal(player)
-            answer = None
             # setting answer to empty string allows player
             # to chose different option in every loop
         else:
-            while answer not in ['S', 'G']:
-                print("You do not have enough money to buy a vocal")
-                print("Press S if u want to spin a wheel" + '\n' +
-                      "Press G if u want to guess the word" + '\n')
+            range = ['S', 'G'] if can_spin_wheel else ['G']
+            while answer not in range:
+                print("You do not have enough money to buy a vocal\n")
+                if can_spin_wheel:
+                    print("Press S if u want to spin a wheel")
+                print("Press G if u want to guess the word\n")
                 answer = clear_char(input(str())).upper()
         return answer, good_guess
 
@@ -224,6 +230,7 @@ class GameRound():
 
         if self.word_repr != self.word:
             print('\n' + "There's no more consonants in the word" + '\n')
+            print(self.word_repr)
 
         # muszę to jakoś poprawić
 
@@ -241,7 +248,7 @@ class GameRound():
                 answer = clear_char(input(str())).upper()
 
             if answer == 'B':
-                answer, good_guess = self.buy_vocal(player)
+                answer, good_guess = self.buy_vocal(player, False)
                 if not good_guess:
                     self.id += 1
 
@@ -250,11 +257,15 @@ class GameRound():
                 if not self.guess_word():
                     self.id += 1
 
-        player.add_to_total_balance(player.balance())
+            print(self.word_repr)
+
+        print(f"\nThe answer is '{self.word_repr}'\n")
 
         player_info = player.id
 
         print(f'\nPlayer {player_info} wins the round\n')
+
+        player.add_to_total_balance(player.balance())
 
         for player in self._players:
             player.set_balance(0)

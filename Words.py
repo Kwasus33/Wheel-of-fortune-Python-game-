@@ -2,8 +2,9 @@ import random
 
 
 VOCALS = ['A', 'Ą', 'E', 'Ę', 'I', 'O', 'Ó', 'U']
-CONSONANTS = ['B', 'C', 'Ć', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'Ł', 'M', 'N',
-              'Ń', 'P', 'R', 'S', 'Ś', 'T', 'W', 'V', 'X', 'Y', 'Z', 'Ź', 'Ż']
+CONSONANTS = ['B', 'C', 'Ć', 'D', 'F', 'G', 'H', 'J', 'K', 'L',
+              'Ł', 'M', 'N', 'Ń', 'P', 'Q', 'R', 'S', 'Ś', 'T',
+              'W', 'V', 'X', 'Y', 'Z', 'Ź', 'Ż']
 
 
 class EmptyWordError(Exception):

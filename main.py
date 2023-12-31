@@ -10,7 +10,7 @@ def main():
         print('Give a valid number of players [2-6 players]')
         try:
             players_number = int(clear_word(input()))
-        except TypeError:
+        except ValueError:
             print('Value have to be a number between 2 - 6')
 
     menu = GameMenu('words.txt', players_number)
@@ -50,6 +50,13 @@ if __name__ == "__main__":
 
 
 # D O   Z R O B I E N I A
+
+    # !!!
+    # gdy nie ma już spółgłosek a gracza nie stać na kupienie samogłoski
+    # powinien albo od razu dostać komunikat i nie mieć tej opcji albo po
+    # pierwszej próbie zakupu, dostać info i nie móc wybrać opcji zakupu (B)
+    # !!!
+
     # uproszczenie niektórych funkcji
     # ewentualna optymalizacja kodu - jeśli znajdę na to pomysł
     # poprawki stylistyczne wyświetlanych w terminalu komunikatów
