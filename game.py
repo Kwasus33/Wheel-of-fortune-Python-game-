@@ -44,15 +44,16 @@ class GameRound():
         self._word_object = word
         self._wheel = wheel
         self.word = word.word
+        self.letter_guesses = []
 
-        self.letters_to_guess = {}
+        self.word_consonants = {}
 
         for letter in self.word:
-            if letter != ' ' and letter in CONSONANTS:
-                if letter not in self.letters_to_guess:
-                    self.letters_to_guess[str(letter)] = 1
+            if letter in CONSONANTS:
+                if letter in self.word_consonants:
+                    self.word_consonants[letter] += 1
                 else:
-                    self.letters_to_guess[str(letter)] += 1
+                    self.word_consonants[letter] = 1
 
     @property
     def players(self):
@@ -74,7 +75,7 @@ class GameRound():
 
         return letter
 
-    def guess_letter(self, player: Player, value=None):
+    def guess_letter(self, player: Player, value: str = None):
 
         good_guess = False
         consonant_info = 'Guess a consonant'
@@ -84,25 +85,23 @@ class GameRound():
 
         letter = self.insert_Vocal_or_Consonant(value)
 
+        while letter in self.letter_guesses:
+            print('Letter has been already given. Choose different one')
+            letter = self.insert_Vocal_or_Consonant(value)
+
+        self.letter_guesses.append(letter)
+
         if letter in self.word:
-
-            # prowizoryczny kod
-            if value is not None and letter not in self.letters_to_guess:
-                print('Consonant have been already given. You loose a turn')
-                return False
-            # uniemożliwiający sprawdzanie wielokrotnie tej samej spółgłoski
-
             good_guess = True
-            self.word_repr = self._word_object.update_letter_repr(
-                self.word_repr, letter)
+            self.word_repr = self._word_object.word_repr(self.letter_guesses)
             if letter in CONSONANTS:
                 if value.isnumeric():
-                    amount = self.letters_to_guess[letter] * int(value)
+                    amount = self.word_consonants[letter] * int(value)
                     player.add_to_balance(amount)
                 else:
                     player.add_reward(value)
                     # tu dodaje nagrodę do ekwipunku gracza
-                self.letters_to_guess.pop(letter)
+                self.word_consonants.pop(letter)
 
         return good_guess
 
@@ -111,7 +110,7 @@ class GameRound():
         if word_guess == self.word:
             print('Your guess is correct, you win the round')
             good_guess = True
-            self.letters_to_guess = {}
+            self.word_consonants = {}
             self.word_repr = self.word
         else:
             print('Your guess is not correct')
@@ -155,11 +154,11 @@ class GameRound():
         answer = None
 
         while good_guess:
-            # if all letters are guessed - self.letters_to_guess is empty
+            # if all letters are guessed - self.word_consonants is empty
             # loop ends and func returns
             print(self.word_repr)
 
-            if self.letters_to_guess:
+            if self.word_consonants:
 
                 answer = self.choose_action(answer)
 
@@ -182,48 +181,56 @@ class GameRound():
         return good_guess
         # returns only (if) good_guess = False
 
+    def wheel_spin(self):
+
+        self.id = (self.id % len(self._players))
+        player = self._players[self.id]
+
+        print(f'Player {player.id} turn')
+
+        print('Press any button to spin the wheel')
+        input()
+
+        wheel_item = self._wheel.spin_wheel()
+        value = wheel_item.word
+        # wheel_item is instance of word class
+        print(value)
+
+        if value == 'BANKRUT':
+            player.set_balance(0)
+            self.id += 1
+        elif value == 'STOP':
+            self.id += 1
+            # gracz traci kolejkę
+        else:
+            if not self.win_money(value, player):
+                self.id += 1
+            # jeśli zwróci false to znaczy że gracz traci kolejkę
+            # jeśli nie to ponownie kręci kołem
+        print(self.word_repr + '\n')
+
+        return player
+
     def play(self, idx):
 
-        id = idx % len(self._players)
-        self.word_repr = self._word_object.letter_repr()
+        self.id = idx
+        self.word_repr = self._word_object.word_repr()
 
         print('\n' + self._word_object.category)
         print(self.word_repr + '\n')
 
-        while self.letters_to_guess:
+        while self.word_consonants:
+            player = self.wheel_spin()
 
-            id = (id % len(self._players))
-            player = self._players[id]
+        if self.word_repr != self.word:
+            print('\n' + "There's no more consonants in the word" + '\n')
 
-            print(f'Player {player.id} turn')
-            print('Press any button to spin the wheel')
-            input()
-
-            wheel_item = self._wheel.spin_wheel()
-            value = wheel_item.word
-            # wheel_item is instance of word class
-            print(value)
-
-            if value == 'BANKRUT':
-                player.set_balance(0)
-                id += 1
-            elif value == 'STOP':
-                id += 1
-                # gracz traci kolejkę
-            else:
-                if not self.win_money(str(value), player):
-                    id += 1
-                # jeśli zwróci false to znaczy że gracz traci kolejkę
-                # jeśli nie to ponownie kręci kołem
-
-            print(self.word_repr + '\n')
-
-        print('\n' + "There's no more consonants in the word" + '\n')
+        # muszę to jakoś poprawić
 
         while self.word_repr != self.word:
 
-            id = (id % len(self._players))
-            player = self._players[id]
+            self.id = (self.id % len(self._players))
+            player = self._players[self.id]
 
             print(f'Player {player.id} turn')
 
@@ -236,23 +243,23 @@ class GameRound():
             if answer == 'B':
                 answer, good_guess = self.buy_vocal(player)
                 if not good_guess:
-                    id += 1
+                    self.id += 1
 
             elif answer == 'G':
                 # self.guess_word() returns false if gueesed word is incorect
                 if not self.guess_word():
-                    id += 1
+                    self.id += 1
 
         player.add_to_total_balance(player.balance())
 
         player_info = player.id
 
-        print(f'Player {player_info} wins the round')
+        print(f'\nPlayer {player_info} wins the round\n')
 
         for player in self._players:
             player.set_balance(0)
             print(f'Player {player.id}')
-            print(player.total_balance())
+            print(f'{player.total_balance()}\n')
 
 
 # class Final(GameRound):
@@ -319,33 +326,24 @@ class Final():
 
         best_players = self.best_player()
         if len(best_players) != 1:
-            return "There is non best player. Final round can't be played"
+            return "There is none best player. Final round can't be played"
         best_player = best_players.pop()
         print(f"Player {best_player.id} plays the Final Round")
 
         self.choose_letters_set()
-        word_repr = self._word.letter_repr()
-
-        for letter in self.drawn_letters:
-            word_repr = self._word.update_letter_repr(word_repr, letter)
+        word_repr = self._word.word_repr(self.drawn_letters)
 
         print(self._word.category + '\n' + word_repr)
+
         answer, timedOut = pytimedinput.timedInput(
             prompt="You have 20 seconds to guess the word\n",
             timeout=10)
+
         answer = clear_word(str(answer)).upper()
+
         if timedOut:
             print("Time's up.")
         print(f"Player's answer is: '{answer}'")
-
-        # timeout = 20
-        # time = threading.Timer(timeout, print, ["Time's up!"])
-        # time.start()
-        # print(self._word.category + '\n' + word_repr)
-        # answer = clear_word(input(
-        #     str('You have 20 secunds to guess the word')
-        #     )).upper()
-        # time.cancel()
 
         if answer == self._word.word:
             print(f"You guessed correctly. The word is {self._word.word}")

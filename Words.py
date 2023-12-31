@@ -14,8 +14,8 @@ class EmptyWordListError(Exception):
     pass
 
 
-class InvalidLetterValueError(Exception):
-    pass
+# class InvalidLetterValueError(Exception):
+#     pass
 
 
 class Words():
@@ -63,31 +63,16 @@ class Word():
     def category(self):
         return self._category
 
-    def letter_repr(self) -> str:
-        """
+    def word_repr(self, letter_guesses: list = None):
 
-        """
-        self._underscape_repr = ''
+        self.letter_guesses = letter_guesses if letter_guesses else []
+        word_repr = ''
+
         for letter in self._word:
-            if letter not in CONSONANTS and letter not in VOCALS:
-                self._underscape_repr += letter
+            if letter in self.letter_guesses or (letter not in CONSONANTS and
+                                                 letter not in VOCALS):
+                word_repr += letter
             else:
-                self._underscape_repr += '_'
-        return self._underscape_repr
+                word_repr += '_'
 
-    def update_letter_repr(self, current_letter_repr: str,
-                           guess_letter: str = None) -> str:
-        """
-
-        """
-        guess_letter = str(guess_letter).upper()
-        new_underscape_repr = ''
-        if guess_letter is not None:
-            for pos, value in enumerate(self._word):
-                if guess_letter == value and current_letter_repr[pos] == '_':
-                    new_underscape_repr += guess_letter
-                else:
-                    new_underscape_repr += current_letter_repr[pos]
-        else:
-            new_underscape_repr = str(current_letter_repr)
-        return new_underscape_repr
+        return word_repr

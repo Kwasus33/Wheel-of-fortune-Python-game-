@@ -21,6 +21,16 @@ def main():
         word = menu.get_word()
         GameRound(players, word, wheel).play(idx)
 
+    word = menu.get_word()
+    final = Final(players, word)
+    print(final.play_final())
+
+
+if __name__ == "__main__":
+    main()
+
+
+# Z R O B I O N E
     # NAPRAWIONE - prosty kod uniemożliwiający to dla spółgłosek
     # DO PRZEMYŚLENIA - samogłoski można podać wiele razy te same,
     # za każdym razem gracz traci pieniądze a reprezentacja się nie zmienia
@@ -29,7 +39,7 @@ def main():
 
     # gdy w zgadywanym słowie poda się drugi raz do odgadnięcia
     # literę już odganiętą to
-    # amount = self.letters_to_guess[letter] * int(value)
+    # amount = self.word_consonants[letter] * int(value)
     # w funkcji guess_letter() wyrzuca key error
     # bo litera została już usunięta z tablicy
     # trzeba dodać tablicę z odganiętymi literami
@@ -38,13 +48,22 @@ def main():
     # a powinna kończyć się funkcja z info o przegranej
     # mechanizm znajdywania najlepszego gracza jest słaby i nie działa git
 
-    word = menu.get_word()
-    final = Final(players, word)
-    print(final.play_final())
 
-    # mogę dodać sprawdzenie żeby użytkownik nie mógł podać w finale
-    # liter które już zostały dla niego wylosowane lub sam podał
+# D O   Z R O B I E N I A
+    # uproszczenie niektórych funkcji
+    # ewentualna optymalizacja kodu - jeśli znajdę na to pomysł
+    # poprawki stylistyczne wyświetlanych w terminalu komunikatów
+    # warunek sprawdzający żeby plik z hasłami miał {liczba rund + finał} haseł
+
+    # E W E N T U A L N I E
+    #   mogę dodać sprawdzenie żeby użytkownik nie mógł podać w finale
+    #   liter które już zostały dla niego wylosowane lub sam podał -
+    #   nie dodałem tego warunku - można zwielokrotnić podane litery
 
 
-if __name__ == "__main__":
-    main()
+# I N F O / P R Z Y P O M I N A J K A
+    # zanim skończą się litery alfabetu do wyboru w zgadywaniu
+    # to najpierw skończą się litery w słowie odgadywanym
+    # maksymalnie słowo może zawierać wszytskie litery alfabetu
+    # znaki nie będące literami są wyświetlane w reprezentacji hasła
+    # więc nie ma możliwości wyjścia poza zakres
