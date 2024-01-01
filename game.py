@@ -10,40 +10,104 @@ import pytimedinput
 
 
 class GameMenu():
+    """
+    Class GameMenu contains atributes:
+
+    param players_num: number of players in game, defaults to 1
+    type players_num: int
+
+    param path: path to file with words to draw from during game
+    type path: str
+
+    param words: object of class Words,
+    which atribute is list of objects of Word class
+    type words: class Words
+    """
     def __init__(self, path: str, num_of_players: int = 1) -> None:
+        """
+        Creates instance of GameMenu
+        """
         self._players_num = num_of_players
         self._path = path
         self.words = Words(Database().load_from_file(self._path))
 
     @property
     def get_players(self) -> list:
+        """
+        Creates players as Player class objects
+        and returns a list of them
+        """
         players = []
         for idx in range(self._players_num):
             players.append(Player(idx+1))
         return players
 
     def check_words(self) -> Words:
+        """
+        Returns object of class Words,
+        containing all words that can be drawn
+        """
         return self.words
 
     def get_wheel_of_forune(self,
                             path: str = 'values.txt') -> Wheel_of_fortune:
+        """
+        Creates and returns an object of class Wheel_of_fortune with
+        values from given path, defaults to values.txt (standard values)
+        """
         return Wheel_of_fortune(Database().load_from_file(str(path)))
 
     def get_word(self) -> Word:
+        """
+        Draws and returns a Word object from Words object
+        Removes drawn Word from Words, so it cannot be drawn more than once
+        """
         word = self.words.draw_word()
         self.words.words.remove(word)
         return word
 
 
 class GameRound():
+    """
+    Class GameRound contains atributes:
+
+    param players: list of players
+    type players: list of class Player objects
+
+    param word_object: contains word to guess and it's category
+    type word_object: class Word object
+
+    param word: word to guess, word_object instance atribute
+    type word_object: str
+
+    param wheel: have methode to spin and return drawn value
+    type wheel: class Wheel_of_fortune object
+
+    param word_repr: current representation of a drawn word to guess
+    type word_repr: str
+
+    param id: id/position on a list of a player whose turn is at that moment
+    type id: int
+
+    param letter_guesses: contains all already tried letters, to not repeat any
+    type letter_guesses: list
+
+    param word_consonants: contains quantity of all consonants in drawn word
+    type word_consonants: dict{consonant: quantity}
+    """
     def __init__(self, players: list["Player"],
                  word: Word,
                  wheel: Wheel_of_fortune) -> None:
-
+        """
+        Creates instance of GameRound
+        """
         self._players = players
         self._word_object = word
         self._wheel = wheel
         self.word = word.word
+        self.word_repr = self._word_object.word_repr()
+        self.id = None
+
         self.letter_guesses = []
 
         self.word_consonants = {}
@@ -57,10 +121,13 @@ class GameRound():
 
     @property
     def players(self):
+        "Returns list of players"
         return self._players
 
     def insert_Vocal_or_Consonant(self, value):
+        """
 
+        """
         if value is None:
             letter = clear_char(input(str())).upper()
             while letter not in VOCALS:
@@ -76,7 +143,9 @@ class GameRound():
         return letter
 
     def guess_letter(self, player: Player, value: str = None):
+        """
 
+        """
         good_guess = False
         consonant_info = 'Guess a consonant'
         vocal_info = 'Guess a vocal'
@@ -106,6 +175,9 @@ class GameRound():
         return good_guess
 
     def guess_word(self):
+        """
+
+        """
         word_guess = clear_word(input(str('Guess the word'))).upper()
         if word_guess == self.word:
             print('Your guess is correct, you win the round')
@@ -118,6 +190,9 @@ class GameRound():
         return good_guess
 
     def choose_vocal(self, player: Player):
+        """
+
+        """
         # muszę jakoś zabezpieczyć żeby
         # litera podawana była samogłoską
         player.add_to_balance(-200)
@@ -125,6 +200,9 @@ class GameRound():
         return good_guess
 
     def buy_vocal(self, player: Player, can_spin_wheel: bool = True):
+        """
+
+        """
         answer = None
         good_guess = True
         # good_guess = True returns if bought vocal is correct
@@ -145,6 +223,9 @@ class GameRound():
         return answer, good_guess
 
     def choose_action(self, answer):
+        """
+
+        """
         while answer not in ['B', 'S', 'G']:
             print("Press B if u want to buy a vocal" + '\n' +
                   "Press S if u want to spin a wheel" + '\n' +
@@ -188,7 +269,9 @@ class GameRound():
         # returns only (if) good_guess = False
 
     def wheel_spin(self):
+        """
 
+        """
         self.id = (self.id % len(self._players))
         player = self._players[self.id]
 
@@ -218,9 +301,12 @@ class GameRound():
         return player
 
     def play(self, idx):
+        """
 
+        """
         self.id = idx
-        self.word_repr = self._word_object.word_repr()
+        # self.word_repr = self._word_object.word_repr()
+        # pierwsza repr zadeklarowana w konstruktorze
 
         print('\n' + self._word_object.category)
         print(self.word_repr + '\n')
@@ -275,8 +361,23 @@ class GameRound():
 
 # class Final(GameRound):
 class Final():
-    def __init__(self, players: list[Player], final_word: Word) -> None:
+    """
+    Class Final contains atributes:
 
+    param players: list of players
+    type players: list of class Player objects
+
+    param word: contains word to guess and it's category
+    type word: class Word object
+
+    param drawn_letters: letters drawn and chosen by player that will be
+                         displayed in undersacpe representation of a drawn word
+    type drawn_letters: list
+    """
+    def __init__(self, players: list[Player], final_word: Word) -> None:
+        """
+        Creates instance of Final
+        """
         # super.__init__(players, final_word)
         self._players = players
         self._word = final_word
@@ -286,7 +387,9 @@ class Final():
         self.drawn_letters = drawn_letters
 
     def best_player(self):
+        """
 
+        """
         best_players = []
         players = sorted(self._players,
                          key=lambda player: player.total_balance())
@@ -315,7 +418,9 @@ class Final():
         return best_players
 
     def choose_letters_set(self):
+        """
 
+        """
         print(f'Drawn set of values is: {self.drawn_letters}')
         print('Choose first 3 consonants, then 1 vocal')
 
@@ -334,7 +439,9 @@ class Final():
         self.drawn_letters.append(letter)
 
     def play_final(self) -> None:
+        """
 
+        """
         best_players = self.best_player()
         if len(best_players) != 1:
             return "There is none best player. Final round can't be played"
