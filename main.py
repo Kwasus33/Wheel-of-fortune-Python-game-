@@ -1,29 +1,17 @@
-from game import GameMenu, GameRound, Final
-from Utilities import clear_word
+from settings import choose_game_mode
+from settings import training_game_mode, standard_game_mode, custom_game_mode
 
 
 def main():
 
-    players_number = 0
+    game_mode = choose_game_mode()
 
-    while players_number <= 1 or players_number > 6:
-        print('Give a valid number of players [2-6 players]')
-        try:
-            players_number = int(clear_word(input()))
-        except ValueError:
-            print('Value have to be a number between 2 - 6')
-
-    menu = GameMenu('words.txt', players_number)
-    players = menu.get_players
-    wheel = menu.get_wheel_of_forune()
-
-    for idx in range(3):
-        word = menu.get_word()
-        GameRound(players, word, wheel).play(idx)
-
-    word = menu.get_word()
-    final = Final(players, word)
-    print(final.play_final())
+    if game_mode == '1':
+        training_game_mode()
+    elif game_mode == '2':
+        standard_game_mode()
+    else:
+        custom_game_mode()
 
 
 if __name__ == "__main__":

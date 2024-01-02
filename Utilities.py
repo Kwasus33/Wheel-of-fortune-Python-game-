@@ -47,7 +47,3 @@ def clear_word(word):
     """
     word = str(word).rstrip().lstrip()
     return word
-
-
-def choose_game_mode():
-    pass

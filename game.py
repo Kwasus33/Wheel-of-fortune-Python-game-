@@ -156,6 +156,9 @@ class GameRound():
         letter = self.insert_Vocal_or_Consonant(value)
 
         while letter in self.letter_guesses:
+            # DO POPRAWKI
+            # może być sytuacja że pętla będzie się kręcić w nieskończoność
+            # gdy wybrano zakup samogłoski, a wszystkie zostały już kupione
             print('Letter has been already given. Choose different one')
             letter = self.insert_Vocal_or_Consonant(value)
 
