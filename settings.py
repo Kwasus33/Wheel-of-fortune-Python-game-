@@ -16,7 +16,7 @@ def choose_game_mode() -> str:
 def give_file_path(number_of_rounds):
     print("Give a path to file with words to draw during game (.txt or .json)")
     print(f"Number of words in file must be minimum {number_of_rounds + 1}")
-    answer = clear_char(input(str()))
+    answer = clear_word(input(str()))
     return answer
 
 
@@ -26,7 +26,7 @@ def choose_wheel_path(menu):
     answer = clear_char(input(str())).upper()
     if answer == 'T':
         print("Give path to that file")
-        path = clear_char(input(str()))
+        path = clear_word(input(str()))
         return menu.get_wheel_of_forune(path)
     else:
         return menu.get_wheel_of_forune()

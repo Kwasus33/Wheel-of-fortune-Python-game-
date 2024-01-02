@@ -155,12 +155,23 @@ class GameRound():
 
         letter = self.insert_Vocal_or_Consonant(value)
 
-        while letter in self.letter_guesses:
-            # DO POPRAWKI
-            # może być sytuacja że pętla będzie się kręcić w nieskończoność
-            # gdy wybrano zakup samogłoski, a wszystkie zostały już kupione
-            print('Letter has been already given. Choose different one')
-            letter = self.insert_Vocal_or_Consonant(value)
+        if letter in self.letter_guesses:
+            print("Letter was already given. You lose a turn")
+            return good_guess
+
+        # while letter in self.letter_guesses:
+        #     # DO POPRAWKI
+
+        #     # może być sytuacja że pętla będzie się kręcić w nieskończoność
+        #     # gdy wybrano zakup samogłoski, a wszystkie zostały już kupione
+        #     # moge dodać warunek w choose_action() żeby nie było opcji buy
+        #     # jeśli wszystkie samogłoski z alfabetu zostały już użyte
+
+        #     # albo przy podaniu złej wartości lub litery już użytej,
+        #     # użytkownik traci kolejkę, problem się rozwiązuje
+
+        #     print('Letter has been already given. Choose different one')
+        #     letter = self.insert_Vocal_or_Consonant(value)
 
         self.letter_guesses.append(letter)
 
@@ -175,6 +186,8 @@ class GameRound():
                     player.add_reward(value)
                     # tu dodaje nagrodę do ekwipunku gracza
                 self.word_consonants.pop(letter)
+        else:
+            print("Your guess is incorrect")
 
         return good_guess
 
@@ -311,12 +324,10 @@ class GameRound():
     def play(self, idx):
         """
         Players spin the wheel till all consonants are guessed
+        Then can only buy a vocal or guess the word
         Returns if the word is guessed - one of the players wins the round
         """
         self.id = idx
-        # self.word_repr = self._word_object.word_repr()
-        # pierwsza repr zadeklarowana w konstruktorze
-
         # print('\n' + self._word_object.category)
         # print(self.word_repr + '\n')
 
@@ -326,8 +337,6 @@ class GameRound():
         if self.word_repr != self.word:
             print('\n' + "There's no more consonants in the word" + '\n')
             print(self.word_repr + '\n')
-
-        # muszę to jakoś poprawić
 
         while self.word_repr != self.word:
 
