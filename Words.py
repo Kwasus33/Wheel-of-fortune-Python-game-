@@ -24,9 +24,15 @@ class EmptyWordListError(Exception):
 
 
 class Words():
+    """
+    Class Words contains atributes:
+
+    param words: list of class Word objects
+    """
     def __init__(self, words: list["Word"] = None) -> None:
         """
         Creates instance of Words
+        Raises EmptyWordListError when list is empty
         """
         self._words = words if words else []
         if not self._words:
@@ -35,13 +41,13 @@ class Words():
     @property
     def words(self):
         """
-
+        Returns list of words
         """
         return self._words
 
     def draw_word(self) -> "Word":
         """
-
+        Draws and returns a word
         """
         return random.choice(self.words)
 
@@ -60,21 +66,26 @@ class Word():
             raise EmptyWordError('Word have to be given')
 
         self._word = str(word).upper()
-        self._category = str(category).upper()
+        self._category = str(category).upper() if category else 'NO CATEGORY'
 
     @property
     def word(self):
         """
-
+        Returns word attribute of Word object
         """
         return self._word
 
     @property
     def category(self):
+        """
+        Returns category attribute of Word object
+        """
         return self._category
 
     def word_repr(self, letter_guesses: list = None):
-
+        """
+        Returns word representation with exposed guessed letters
+        """
         self.letter_guesses = letter_guesses if letter_guesses else []
         word_repr = ''
 

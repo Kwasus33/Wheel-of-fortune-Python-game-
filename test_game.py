@@ -22,6 +22,7 @@ def test_create_word():
 def test_create_word_without_category():
     word = Word('koło fortuny')
     assert word.word == 'koło fortuny'.upper()
+    assert word.category == 'NO CATEGORY'
     letters_list = ['K', 'O', 'Ł', 'O', 'F', 'O', 'R', 'T', 'U', 'N', 'Y']
     assert (letter in letters_list for letter in word.word)
     starting_repr = word.word_repr()
@@ -39,15 +40,18 @@ def test_create_empty_word():
 
 def test_create_Words_list():
     word1 = Word('gra')
-    word2 = Word('koło')
+    word2 = Word('koło', 'figura')
     word3 = Word('fortuna')
     assert word1.word == 'GRA'
+    assert word1.category == 'NO CATEGORY'
     letters_list1 = ['G', 'R', 'A']
     assert (letter in letters_list1 for letter in word1.word)
     assert word2.word == 'KOŁO'
+    assert word2.category == 'FIGURA'
     letters_list2 = ['K', 'O', 'Ł', 'O']
     assert (letter in letters_list2 for letter in word2.word)
     assert word3.word == 'FORTUNA'
+    assert word3.category == 'NO CATEGORY'
     letters_list3 = ['F', 'O', 'R', 'T', 'U', 'N', 'A']
     assert (letter in letters_list3 for letter in word3.word)
 

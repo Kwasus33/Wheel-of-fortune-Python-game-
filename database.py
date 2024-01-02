@@ -2,35 +2,47 @@ from Utilities import read_from_csv, read_from_json
 import os.path
 
 
-class PersonPathNotFound(FileNotFoundError):
+class FilePathNotFound(FileNotFoundError):
     pass
 
 
-class PersonPermissionError(PermissionError):
-    pass
-
-
-class PersonPathIsDirectory(IsADirectoryError):
+class FilePathIsDirectory(IsADirectoryError):
     pass
 
 
 class Database():
+    """
+    Class Database attributes:
+
+    param words: list of values read from file
+    param type: list
+    """
     def __init__(self) -> None:
-        self.people = []
+        """
+        Creates instance of Database
+        """
+        self.words = []
 
     def load_from_file(self, path):
+        """
+        Depending on file extension, redirects to proper function
+        Returns list of values read from file
+        Raises FileNotFoundError if path is invalid or file does not exist
+        Raises PermissionError if user cannot open the file
+        Raises IsADirectoryError if path leads to directory not file
+        """
         ext = os.path.splitext(path)[:-1]
         try:
             with open(path, 'r') as file_handle:
                 if ext == 'json':
-                    self.people = read_from_json(file_handle)
+                    self.words = read_from_json(file_handle)
                 else:
-                    self.people = read_from_csv(file_handle)
-            return self.people
+                    self.words = read_from_csv(file_handle)
+            return self.words
         except FileNotFoundError:
-            raise PersonPathNotFound("Could not open person database")
+            raise FilePathNotFound("Could not open file")
         except PermissionError:
-            msg = 'You do not have permission to open the database'
-            raise PersonPermissionError(msg)
+            msg = 'You do not have permission to open the file'
+            raise PermissionError(msg)
         except IsADirectoryError:
-            raise PersonPathIsDirectory('Can only work on files')
+            raise FilePathIsDirectory('Can only work on files')

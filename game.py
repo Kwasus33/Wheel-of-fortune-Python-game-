@@ -6,7 +6,6 @@ from database import Database
 from Words import CONSONANTS, VOCALS
 import random
 import pytimedinput
-# import threading
 
 
 class GameMenu():
@@ -180,18 +179,18 @@ class GameRound():
         """
         Returns True if player correctly guesses the word, else False
         """
-        word_guess = clear_word(input(str('Guess the word'))).upper()
+        word_guess = clear_word(input(str('Guess the word\n'))).upper()
         if word_guess == self.word:
-            print('Your guess is correct, you win the round')
+            print('\nYour guess is correct, you win the round\n')
             good_guess = True
             self.word_consonants = {}
             self.word_repr = self.word
         else:
-            print('Your guess is not correct')
+            print('\nYour guess is not correct\n')
             good_guess = False
         return good_guess
 
-    def choose_vocal(self, player: Player):
+    def buy_vocal(self, player: Player):
         """
         Decreases players balance by 200, after buying a vocal
         returns True if bought vocal is in the word, else False
@@ -200,38 +199,30 @@ class GameRound():
         good_guess = self.guess_letter(player)
         return good_guess
 
-    def buy_vocal(self, player: Player, can_spin_wheel: bool = True):
-        """
-        Allows player to buy vocal if have enought money,
-        else force player to choose to spin the wheel or guess the word
-        """
-        answer = None
-        good_guess = True
-        # good_guess = True returns if bought vocal is correct
-        # or when player has not enough money to buy a vocal,
-        # in second situation player doesn't lose a turn
-        if player.balance() > 200:
-            good_guess = self.choose_vocal(player)
-            # setting answer to empty string allows player
-            # to chose different option in every loop
-        else:
-            range = ['S', 'G'] if can_spin_wheel else ['G']
-            while answer not in range:
-                print("You do not have enough money to buy a vocal\n")
-                if can_spin_wheel:
-                    print("Press S if u want to spin a wheel")
-                print("Press G if u want to guess the word\n")
-                answer = clear_char(input(str())).upper()
-        return answer, good_guess
-
-    def choose_action(self, answer):
+    def choose_action(self, player):
         """
         Returns player's choice - buy a vocal, spin the wheel or guess the word
         """
-        while answer not in ['B', 'S', 'G']:
-            print("Press B if u want to buy a vocal" + '\n' +
-                  "Press S if u want to spin the wheel" + '\n' +
-                  "Press G if u want to guess the word" + '\n')
+        if player.balance() >= 200:
+            if self.word_consonants:
+                range = ['B', 'S', 'G']
+            else:
+                range = ['B', 'G']
+        else:
+            if self.word_consonants:
+                range = ['S', 'G']
+            else:
+                range = ['G']
+
+        answer = None
+        while answer not in range:
+            if 'B' in range:
+                print("Press B if u want to buy a vocal" + '\n')
+            else:
+                print("You do not have enough money to buy a vocal" + '\n')
+            if 'S' in range:
+                print("Press S if u want to spin the wheel" + '\n')
+            print("Press G if u want to guess the word" + '\n')
             answer = clear_char(input(str())).upper()
         return answer
 
@@ -248,26 +239,25 @@ class GameRound():
         # Returns True when player chooses to spin the wheel
 
         good_guess = self.guess_letter(player, value)
-        answer = None
 
         while good_guess:
             # if all letters are guessed - self.word_consonants is empty
             # loop ends and func returns
             print(self.word_repr)
-
             if self.word_consonants:
 
-                answer = self.choose_action(answer)
+                answer = self.choose_action(player)
 
                 if answer == 'B':
-                    answer, good_guess = self.buy_vocal(player)
+                    good_guess = self.buy_vocal(player)
                     # jeśli tu będzie good_guess = false to zostanie zwrócone
                     # false po wyjściu z pętli while good_guess
 
                 elif answer == 'G':
                     return self.guess_word()
 
-                else:
+                # wystarczy też else: (tylko mniej czytelne)
+                elif answer == 'S':
                     # returns True if player wants to spin the wheel,
                     # it returns to play(), where spin is held
                     return good_guess
@@ -286,6 +276,9 @@ class GameRound():
         """
         self.id = (self.id % len(self._players))
         player = self._players[self.id]
+
+        print('\n' + self._word_object.category)
+        print(self.word_repr + '\n')
 
         print(f'Player {player.id} turn')
 
@@ -308,7 +301,7 @@ class GameRound():
                 self.id += 1
             # jeśli zwróci false to znaczy że gracz traci kolejkę
             # jeśli nie to ponownie kręci kołem
-        print(self.word_repr + '\n')
+        # print(self.word_repr + '\n')
 
         return player
 
@@ -321,15 +314,15 @@ class GameRound():
         # self.word_repr = self._word_object.word_repr()
         # pierwsza repr zadeklarowana w konstruktorze
 
-        print('\n' + self._word_object.category)
-        print(self.word_repr + '\n')
+        # print('\n' + self._word_object.category)
+        # print(self.word_repr + '\n')
 
         while self.word_consonants:
             player = self.wheel_spin()
 
         if self.word_repr != self.word:
             print('\n' + "There's no more consonants in the word" + '\n')
-            print(self.word_repr)
+            print(self.word_repr + '\n')
 
         # muszę to jakoś poprawić
 
@@ -338,25 +331,21 @@ class GameRound():
             self.id = (self.id % len(self._players))
             player = self._players[self.id]
 
-            print(f'Player {player.id} turn')
+            print(f'Player {player.id} turn\n')
 
-            answer = None
-            while answer not in ['B', 'G']:
-                print("Press B if u want to buy a vocal" + '\n' +
-                      "Press G if u want to guess the word" + '\n')
-                answer = clear_char(input(str())).upper()
+            answer = self.choose_action(player)
 
             if answer == 'B':
-                answer, good_guess = self.buy_vocal(player, False)
+                good_guess = self.buy_vocal(player)
                 if not good_guess:
                     self.id += 1
+                print(self.word_repr)
 
             elif answer == 'G':
                 # self.guess_word() returns false if gueesed word is incorect
                 if not self.guess_word():
                     self.id += 1
-
-            print(self.word_repr)
+                    print(self.word_repr)
 
         print(f"\nThe answer is '{self.word_repr}'\n")
 

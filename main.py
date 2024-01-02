@@ -31,6 +31,9 @@ if __name__ == "__main__":
 
 
 # Z R O B I O N E
+    # czy potrzebny jest warunek dający znać i uniemożliwiający
+    # wybór opcji buy kiedy w słowie skończą się samogłoski
+
     # NAPRAWIONE - prosty kod uniemożliwiający to dla spółgłosek
     # DO PRZEMYŚLENIA - samogłoski można podać wiele razy te same,
     # za każdym razem gracz traci pieniądze a reprezentacja się nie zmienia

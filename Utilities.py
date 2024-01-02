@@ -11,13 +11,17 @@ def read_from_json(fh):
 
 
 def read_from_csv(fh):
+    """
+    Return a list of class Word objects read from file
+    """
     list_of_values = []
     reader = csv.DictReader(fh)
-    key = None
     try:
         for row in reader:
             if 'key' in row.keys():
                 key = clear_word(row['key'])
+            else:
+                key = None
             value = clear_word(row['value'])
             list_of_values.append(Word(value, key))
     except csv.Error as e:
@@ -26,6 +30,9 @@ def read_from_csv(fh):
 
 
 def clear_char(letter: str):
+    """
+    Returns char as a cleared of whitespace string
+    """
     letter = str(letter)
     letter = letter.rstrip().lstrip()
     if len(letter) != 1:
@@ -34,6 +41,13 @@ def clear_char(letter: str):
         return letter
 
 
-def clear_word(current_letter_repr):
-    current_letter_repr = str(current_letter_repr).rstrip().lstrip()
-    return current_letter_repr
+def clear_word(word):
+    """
+    Returns cleared of leftside or rightside whitespace word or sentance
+    """
+    word = str(word).rstrip().lstrip()
+    return word
+
+
+def choose_game_mode():
+    pass
