@@ -1,6 +1,6 @@
 import pytest
 from Words import Word, Words
-from Words import EmptyWordError, EmptyWordListError
+from Words import EmptyWordError, WordNotGivenError, EmptyWordListError
 from Wheel_of_fortune import Wheel_of_fortune
 from Wheel_of_fortune import EmptyWheelOfFortuneError
 from player import Player
@@ -14,27 +14,27 @@ def test_create_word():
     assert word.word == 'koło fortuny'.upper()
     assert word.category == "GRA"
     letters_list = ['K', 'O', 'Ł', 'O', 'F', 'O', 'R', 'T', 'U', 'N', 'Y']
-    assert (letter in letters_list for letter in word.letters_dict)
-    assert word.letter_repr() == '____ _______'
-    starting_repr = word.letter_repr()
-    new_word_repr = word.update_letter_repr(starting_repr, 'ł')
-    assert new_word_repr == '__Ł_ _______'
+    assert (letter in letters_list for letter in word.word)
+    assert word.word_repr() == '____ _______'
+    assert word.word_repr(['Ł']) == '__Ł_ _______'
 
 
 def test_create_word_without_category():
     word = Word('koło fortuny')
     assert word.word == 'koło fortuny'.upper()
     letters_list = ['K', 'O', 'Ł', 'O', 'F', 'O', 'R', 'T', 'U', 'N', 'Y']
-    assert (letter in letters_list for letter in word.letters_dict)
-    assert word.letter_repr() == '____ _______'
-    starting_repr = word.letter_repr()
-    new_word_repr = word.update_letter_repr(starting_repr, 'ł')
+    assert (letter in letters_list for letter in word.word)
+    starting_repr = word.word_repr()
+    assert starting_repr == '____ _______'
+    new_word_repr = word.word_repr(['Ł'])
     assert new_word_repr == '__Ł_ _______'
 
 
 def test_create_empty_word():
     with pytest.raises(EmptyWordError):
         Word('')
+    with pytest.raises(WordNotGivenError):
+        Word()
 
 
 def test_create_Words_list():
@@ -43,13 +43,13 @@ def test_create_Words_list():
     word3 = Word('fortuna')
     assert word1.word == 'GRA'
     letters_list1 = ['G', 'R', 'A']
-    assert (letter in letters_list1 for letter in word1.letters_dict)
+    assert (letter in letters_list1 for letter in word1.word)
     assert word2.word == 'KOŁO'
     letters_list2 = ['K', 'O', 'Ł', 'O']
-    assert (letter in letters_list2 for letter in word2.letters_dict)
+    assert (letter in letters_list2 for letter in word2.word)
     assert word3.word == 'FORTUNA'
     letters_list3 = ['F', 'O', 'R', 'T', 'U', 'N', 'A']
-    assert (letter in letters_list3 for letter in word3.letters_dict)
+    assert (letter in letters_list3 for letter in word3.word)
 
     words = Words([word1, word2, word3])
     assert words.words == [word1, word2, word3]

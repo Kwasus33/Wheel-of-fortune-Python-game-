@@ -11,6 +11,10 @@ class EmptyWordError(Exception):
     pass
 
 
+class WordNotGivenError(Exception):
+    pass
+
+
 class EmptyWordListError(Exception):
     pass
 
@@ -22,7 +26,7 @@ class EmptyWordListError(Exception):
 class Words():
     def __init__(self, words: list["Word"] = None) -> None:
         """
-
+        Creates instance of Words
         """
         self._words = words if words else []
         if not self._words:
@@ -43,10 +47,15 @@ class Words():
 
 
 class Word():
-    def __init__(self, word: str, category: str = None) -> None:
+    def __init__(self, word: str = None, category: str = None) -> None:
         """
+        Creates instance of Word
+        Raises EmptyWordError if word is an empty str
+        Raises WordNotGivenError if word is not given
+        """
+        if word is None:
+            raise WordNotGivenError('The word have to be given')
 
-        """
         if not word:
             raise EmptyWordError('Word have to be given')
 

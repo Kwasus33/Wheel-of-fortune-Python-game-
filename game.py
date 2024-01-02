@@ -126,7 +126,7 @@ class GameRound():
 
     def insert_Vocal_or_Consonant(self, value):
         """
-
+        Player inserts letter, func checks if given letter is correct
         """
         if value is None:
             letter = clear_char(input(str())).upper()
@@ -144,7 +144,9 @@ class GameRound():
 
     def guess_letter(self, player: Player, value: str = None):
         """
-
+        Player chooses a letter, if letter is in word,
+        word underscape representation is updated
+        if letter is consonant and in word, player earns drawn money
         """
         good_guess = False
         consonant_info = 'Guess a consonant'
@@ -176,7 +178,7 @@ class GameRound():
 
     def guess_word(self):
         """
-
+        Returns True if player correctly guesses the word, else False
         """
         word_guess = clear_word(input(str('Guess the word'))).upper()
         if word_guess == self.word:
@@ -191,17 +193,17 @@ class GameRound():
 
     def choose_vocal(self, player: Player):
         """
-
+        Decreases players balance by 200, after buying a vocal
+        returns True if bought vocal is in the word, else False
         """
-        # muszę jakoś zabezpieczyć żeby
-        # litera podawana była samogłoską
         player.add_to_balance(-200)
         good_guess = self.guess_letter(player)
         return good_guess
 
     def buy_vocal(self, player: Player, can_spin_wheel: bool = True):
         """
-
+        Allows player to buy vocal if have enought money,
+        else force player to choose to spin the wheel or guess the word
         """
         answer = None
         good_guess = True
@@ -224,19 +226,27 @@ class GameRound():
 
     def choose_action(self, answer):
         """
-
+        Returns player's choice - buy a vocal, spin the wheel or guess the word
         """
         while answer not in ['B', 'S', 'G']:
             print("Press B if u want to buy a vocal" + '\n' +
-                  "Press S if u want to spin a wheel" + '\n' +
+                  "Press S if u want to spin the wheel" + '\n' +
                   "Press G if u want to guess the word" + '\n')
             answer = clear_char(input(str())).upper()
         return answer
 
     def win_money(self, value, player):
         """
-
+        First player guesses a consonant
+        If guess is in word_consonants player can buy a vocal,
+        guess the word, or spin the wheel
         """
+        # CZY DODAWAĆ TO DO DOKUMENTACJI
+        # Player plays while guesses are correct - good_guess = True
+        # Returns False, when guessed consonant or bought vocal is incorect
+        # Returns True, when guessed word is correct
+        # Returns True when player chooses to spin the wheel
+
         good_guess = self.guess_letter(player, value)
         answer = None
 
@@ -270,7 +280,9 @@ class GameRound():
 
     def wheel_spin(self):
         """
-
+        Allows player to spin the wheel
+        Maintains forward actions dependent on drawn value
+        Returns currently playing player instance
         """
         self.id = (self.id % len(self._players))
         player = self._players[self.id]
@@ -302,7 +314,8 @@ class GameRound():
 
     def play(self, idx):
         """
-
+        Players spin the wheel till all consonants are guessed
+        Returns if the word is guessed - one of the players wins the round
         """
         self.id = idx
         # self.word_repr = self._word_object.word_repr()
@@ -388,7 +401,10 @@ class Final():
 
     def best_player(self):
         """
-
+        Returns a list of best players
+        One who have the highest balance
+        if several have same balance, one who have the most rewards
+        if several have same balance and same number of rewards, returns each
         """
         best_players = []
         players = sorted(self._players,
@@ -419,7 +435,8 @@ class Final():
 
     def choose_letters_set(self):
         """
-
+        Updates set of letters to expose if in word
+        by 3 consonants and 1 vocal chosen by player
         """
         print(f'Drawn set of values is: {self.drawn_letters}')
         print('Choose first 3 consonants, then 1 vocal')
@@ -440,7 +457,10 @@ class Final():
 
     def play_final(self) -> None:
         """
-
+        Informs which Player plays final round
+        Player gives set of own letters, letters in word are exposed
+        Player has 20 seconds to give the answer
+        Returns information about the final result
         """
         best_players = self.best_player()
         if len(best_players) != 1:
