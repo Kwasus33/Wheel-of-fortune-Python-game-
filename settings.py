@@ -7,6 +7,9 @@ class NotEnoughWordsError(Exception):
 
 
 def choose_game_mode() -> str:
+    """
+    Players choose game mode
+    """
     answer = None
     mode3_info = "(2-6 players, number of players is number of rounds + final"
     while answer not in ['1', '2', '3']:
@@ -18,6 +21,9 @@ def choose_game_mode() -> str:
 
 
 def give_file_path(number_of_rounds):
+    """
+    Players give a path to a file with words
+    """
     print("Give a path to file with words to draw during game (.txt or .json)")
     print(f"Number of words in file must be minimum {number_of_rounds + 1}")
     answer = clear_word(input(str()))
@@ -25,6 +31,9 @@ def give_file_path(number_of_rounds):
 
 
 def choose_wheel_path(menu):
+    """
+    Choose if wheel of fortune have default or own values, read from file
+    """
     print("Press T to give a path to a file with own wheel of fortune values")
     print("Else press any other value")
     answer = clear_char(input(str())).upper()
@@ -37,7 +46,9 @@ def choose_wheel_path(menu):
 
 
 def set_game_mode(players_number: int, rounds_number: int = 3):
-
+    """
+    Manages whole gameplay, creates instances of GameMenu, GameRound and Final
+    """
     words_path = give_file_path(rounds_number)
     training_menu = GameMenu(words_path)
     standard_menu = GameMenu(words_path, players_number)
@@ -59,15 +70,24 @@ def set_game_mode(players_number: int, rounds_number: int = 3):
 
 
 def training_game_mode():
+    """
+    Game Mode to train skills, gameplay of 3 rounds + final for 1 player
+    """
     set_game_mode(1)
 
 
 def standard_game_mode():
+    """
+    Standard gameplay - 3 players, 3 rounds + final
+    """
     set_game_mode(3)
 
 
 def custom_game_mode():
-
+    """
+    Game can be played by 2 to 6 players
+    There is as many rounds as players + final
+    """
     players_number = 0
     while players_number <= 1 or players_number > 6:
         print('Give a valid number of players [2-6 players]')
