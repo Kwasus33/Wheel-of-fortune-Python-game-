@@ -13,7 +13,7 @@ class InvalidWordDataError(Exception):
         self.item = item
 
 
-def read_from_json(fh):
+def read_from_json(fh) -> list["Word"]:
     """
     Return a list of class Word objects read from .json file
     """
@@ -36,7 +36,7 @@ def read_from_json(fh):
     return list_of_words
 
 
-def read_from_csv(fh):
+def read_from_csv(fh) -> list["Word"]:
     """
     Return a list of class Word objects read from csv file
     """
@@ -57,19 +57,20 @@ def read_from_csv(fh):
     return list_of_words
 
 
-def clear_char(letter: str):
+def clear_char(letter: str) -> str:
     """
     Returns char as a cleared of whitespace string
     """
     letter = str(letter)
     letter = letter.rstrip().lstrip()
-    if len(letter) != 1:
-        return 'Given character is to long'
-    else:
-        return letter
+    # if len(letter) != 1:
+    #     return 'Given character is to long'
+    # else:
+    #    return letter
+    return letter
 
 
-def clear_word(word):
+def clear_word(word) -> str:
     """
     Returns cleared of leftside or rightside whitespace word or sentance
     """

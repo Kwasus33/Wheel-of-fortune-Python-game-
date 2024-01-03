@@ -19,10 +19,6 @@ class EmptyWordListError(Exception):
     pass
 
 
-# class InvalidLetterValueError(Exception):
-#     pass
-
-
 class Words():
     """
     Class Words contains atributes:
@@ -69,20 +65,20 @@ class Word():
         self._category = str(category).upper() if category else 'NO CATEGORY'
 
     @property
-    def word(self):
+    def word(self) -> str:
         """
         Returns word attribute of Word object
         """
         return self._word
 
     @property
-    def category(self):
+    def category(self) -> str:
         """
         Returns category attribute of Word object
         """
         return self._category
 
-    def word_repr(self, letter_guesses: list = None):
+    def word_repr(self, letter_guesses: list = None) -> str:
         """
         Returns word representation with exposed guessed letters
         """

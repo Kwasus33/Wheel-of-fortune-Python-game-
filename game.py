@@ -119,11 +119,11 @@ class GameRound():
                     self.word_consonants[letter] = 1
 
     @property
-    def players(self):
+    def players(self) -> list:
         "Returns list of players"
         return self._players
 
-    def insert_Vocal_or_Consonant(self, value):
+    def insert_Vocal_or_Consonant(self, value) -> str:
         """
         Player inserts letter, func checks if given letter is correct
         """
@@ -141,7 +141,7 @@ class GameRound():
 
         return letter
 
-    def guess_letter(self, player: Player, value: str = None):
+    def guess_letter(self, player: Player, value: str = None) -> bool:
         """
         Player chooses a letter, if letter is in word,
         word underscape representation is updated
@@ -158,20 +158,6 @@ class GameRound():
         if letter in self.letter_guesses:
             print("Letter was already given. You lose a turn")
             return good_guess
-
-        # while letter in self.letter_guesses:
-        #     # DO POPRAWKI
-
-        #     # może być sytuacja że pętla będzie się kręcić w nieskończoność
-        #     # gdy wybrano zakup samogłoski, a wszystkie zostały już kupione
-        #     # moge dodać warunek w choose_action() żeby nie było opcji buy
-        #     # jeśli wszystkie samogłoski z alfabetu zostały już użyte
-
-        #     # albo przy podaniu złej wartości lub litery już użytej,
-        #     # użytkownik traci kolejkę, problem się rozwiązuje
-
-        #     print('Letter has been already given. Choose different one')
-        #     letter = self.insert_Vocal_or_Consonant(value)
 
         self.letter_guesses.append(letter)
 
@@ -191,7 +177,7 @@ class GameRound():
 
         return good_guess
 
-    def guess_word(self):
+    def guess_word(self) -> bool:
         """
         Returns True if player correctly guesses the word, else False
         """
@@ -206,7 +192,7 @@ class GameRound():
             good_guess = False
         return good_guess
 
-    def buy_vocal(self, player: Player):
+    def buy_vocal(self, player: Player) -> bool:
         """
         Decreases players balance by 200, after buying a vocal
         returns True if bought vocal is in the word, else False
@@ -215,7 +201,7 @@ class GameRound():
         good_guess = self.guess_letter(player)
         return good_guess
 
-    def choose_action(self, player):
+    def choose_action(self, player: Player) -> str:
         """
         Returns player's choice - buy a vocal, spin the wheel or guess the word
         """
@@ -242,7 +228,7 @@ class GameRound():
             answer = clear_char(input(str())).upper()
         return answer
 
-    def win_money(self, value, player):
+    def win_money(self, value: str, player: Player) -> bool:
         """
         First player guesses a consonant
         If guess is in word_consonants player can buy a vocal,
@@ -260,19 +246,18 @@ class GameRound():
             # if all letters are guessed - self.word_consonants is empty
             # loop ends and func returns
             print(self.word_repr)
+
             if self.word_consonants:
 
                 answer = self.choose_action(player)
 
                 if answer == 'B':
                     good_guess = self.buy_vocal(player)
-                    # jeśli tu będzie good_guess = false to zostanie zwrócone
-                    # false po wyjściu z pętli while good_guess
 
                 elif answer == 'G':
                     return self.guess_word()
-
                 # wystarczy też else: (tylko mniej czytelne)
+
                 elif answer == 'S':
                     # returns True if player wants to spin the wheel,
                     # it returns to play(), where spin is held
@@ -284,7 +269,7 @@ class GameRound():
         return good_guess
         # returns only (if) good_guess = False
 
-    def wheel_spin(self):
+    def wheel_spin(self) -> Player:
         """
         Allows player to spin the wheel
         Maintains forward actions dependent on drawn value
@@ -321,15 +306,13 @@ class GameRound():
 
         return player
 
-    def play(self, idx):
+    def play(self, idx: int) -> None:
         """
         Players spin the wheel till all consonants are guessed
         Then can only buy a vocal or guess the word
         Returns if the word is guessed - one of the players wins the round
         """
         self.id = idx
-        # print('\n' + self._word_object.category)
-        # print(self.word_repr + '\n')
 
         while self.word_consonants:
             player = self.wheel_spin()
@@ -373,7 +356,6 @@ class GameRound():
             print(f'{player.total_balance()}\n')
 
 
-# class Final(GameRound):
 class Final():
     """
     Class Final contains atributes:
@@ -392,7 +374,6 @@ class Final():
         """
         Creates instance of Final
         """
-        # super.__init__(players, final_word)
         self._players = players
         self._word = final_word
 
@@ -400,7 +381,7 @@ class Final():
 
         self.drawn_letters = drawn_letters
 
-    def best_player(self):
+    def best_player(self) -> list:
         """
         Returns a list of best players
         One who have the highest balance
@@ -411,7 +392,7 @@ class Final():
         players = sorted(self._players,
                          key=lambda player: player.total_balance())
         best_player = players.pop()
-        # bierze ostatni element z listy posortowanej rosnąco, czyli maksymalny
+        # takes last object from ascending list, object with max total_balance
         best_players.append(best_player)
 
         for player in players:
@@ -434,7 +415,7 @@ class Final():
 
         return best_players
 
-    def choose_letters_set(self):
+    def choose_letters_set(self) -> None:
         """
         Updates set of letters to expose if in word
         by 3 consonants and 1 vocal chosen by player
@@ -456,7 +437,7 @@ class Final():
             letter = clear_char(input(str('Choose a vocal'))).upper()
         self.drawn_letters.append(letter)
 
-    def play_final(self) -> None:
+    def play_final(self) -> str:
         """
         Informs which Player plays final round
         Player gives set of own letters, letters in word are exposed

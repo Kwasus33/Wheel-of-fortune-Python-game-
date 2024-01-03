@@ -27,7 +27,7 @@ class Wheel_of_fortune():
             raise EmptyWheelOfFortuneError("Wheel of fortune cannot be empty")
 
     @property
-    def values(self):
+    def values(self) -> list["Word"]:
         """
         Returns list of wheel values
         """

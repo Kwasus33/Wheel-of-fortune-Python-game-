@@ -1,5 +1,6 @@
 from Utilities import clear_char, clear_word
 from game import GameMenu, GameRound, Final
+from Wheel_of_fortune import Wheel_of_fortune
 
 
 class NotEnoughWordsError(Exception):
@@ -20,7 +21,7 @@ def choose_game_mode() -> str:
     return answer
 
 
-def give_file_path(number_of_rounds):
+def give_file_path(number_of_rounds: int) -> str:
     """
     Players give a path to a file with words
     """
@@ -30,7 +31,7 @@ def give_file_path(number_of_rounds):
     return answer
 
 
-def choose_wheel_path(menu):
+def choose_wheel_path(menu: GameMenu) -> Wheel_of_fortune:
     """
     Choose if wheel of fortune have default or own values, read from file
     """
@@ -45,7 +46,7 @@ def choose_wheel_path(menu):
         return menu.get_wheel_of_forune()
 
 
-def set_game_mode(players_number: int, rounds_number: int = 3):
+def set_game_mode(players_number: int, rounds_number: int = 3) -> None:
     """
     Manages whole gameplay, creates instances of GameMenu, GameRound and Final
     """
@@ -69,21 +70,21 @@ def set_game_mode(players_number: int, rounds_number: int = 3):
     print(final.play_final())
 
 
-def training_game_mode():
+def training_game_mode() -> None:
     """
     Game Mode to train skills, gameplay of 3 rounds + final for 1 player
     """
     set_game_mode(1)
 
 
-def standard_game_mode():
+def standard_game_mode() -> None:
     """
     Standard gameplay - 3 players, 3 rounds + final
     """
     set_game_mode(3)
 
 
-def custom_game_mode():
+def custom_game_mode() -> None:
     """
     Game can be played by 2 to 6 players
     There is as many rounds as players + final

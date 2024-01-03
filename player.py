@@ -26,55 +26,56 @@ class Player():
         self._total_balance = 0
 
     @property
-    def id(self):
+    def id(self) -> int:
         """
         Returns id of a player
         """
         return self._id
 
-    def reward(self):
+    def reward(self) -> list:
         """
         Returns list of player's rewards
         """
         return self.rewards
 
-    def add_reward(self, reward):
+    def add_reward(self, reward: str) -> None:
         """
         Adds won reward to player's rewards list
         """
         self.rewards.append(str(reward))
 
-    def clear_reward(self, reward):
+    def clear_reward(self) -> None:
         """
         Removes all rewards from player's rewards list
         """
         self.rewards.clear()
 
-    def balance(self):
+    def balance(self) -> int:
         """
         Returns player's current balance
         """
         return self._balance
 
-    def set_balance(self, amount):
+    def set_balance(self, amount) -> None:
         """
         Sets player's current balance
         """
         self._balance = int(amount)
 
-    def add_to_balance(self, amount=0):
+    def add_to_balance(self, amount=0) -> None:
         """
         Adds given amount to player's current balance
+        Amount defaults to zero
         """
         self._balance += int(amount)
 
-    def total_balance(self):
+    def total_balance(self) -> int:
         """
         Returns player's total balance
         """
         return self._total_balance
 
-    def add_to_total_balance(self, amount=0):
+    def add_to_total_balance(self, amount=0) -> None:
         """
         Adds given amount to player's total balance
         """

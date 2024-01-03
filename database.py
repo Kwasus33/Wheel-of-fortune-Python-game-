@@ -23,7 +23,7 @@ class Database():
         """
         self.words = []
 
-    def load_from_file(self, path):
+    def load_from_file(self, path: str) -> list:
         """
         Depending on file extension, redirects to proper function
         Returns list of values read from file
