@@ -20,6 +20,7 @@ if __name__ == "__main__":
 
 # D O   Z R O B I E N I A
 
+    # ZROBIONE WYRZUCANIE BŁĘDU GDY PLIK JEST ZA KRÓTKI:
     # warunek sprawdzający żeby plik z hasłami miał {liczba rund + finał} haseł
 
     # poprawki stylistyczne wyświetlanych w terminalu komunikatów

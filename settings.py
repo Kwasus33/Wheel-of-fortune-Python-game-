@@ -2,6 +2,10 @@ from Utilities import clear_char, clear_word
 from game import GameMenu, GameRound, Final
 
 
+class NotEnoughWordsError(Exception):
+    pass
+
+
 def choose_game_mode() -> str:
     answer = None
     mode3_info = "(2-6 players, number of players is number of rounds + final"
@@ -32,40 +36,34 @@ def choose_wheel_path(menu):
         return menu.get_wheel_of_forune()
 
 
-def set_game_menu():
-    pass
+def set_game_mode(players_number: int, rounds_number: int = 3):
+
+    words_path = give_file_path(rounds_number)
+    training_menu = GameMenu(words_path)
+    standard_menu = GameMenu(words_path, players_number)
+    menu = training_menu if players_number == 1 else standard_menu
+    if len(menu.check_words().words) < (rounds_number + 1):
+        raise NotEnoughWordsError("You cannot play the game.\n"
+                                  "Given file with words to guess during "
+                                  "gameplay has too little values")
+    players = menu.get_players
+    wheel = choose_wheel_path(menu)
+
+    for idx in range(rounds_number):
+        word = menu.get_word()
+        GameRound(players, word, wheel).play(idx)
+
+    word = menu.get_word()
+    final = Final(players, word)
+    print(final.play_final())
 
 
 def training_game_mode():
-    words_path = give_file_path(3)
-
-    menu = GameMenu(words_path)
-    players = menu.get_players
-    wheel = choose_wheel_path(menu)
-
-    for idx in range(3):
-        word = menu.get_word()
-        GameRound(players, word, wheel).play(idx)
-
-    word = menu.get_word()
-    final = Final(players, word)
-    print(final.play_final())
+    set_game_mode(1)
 
 
 def standard_game_mode():
-    words_path = give_file_path(3)
-
-    menu = GameMenu(words_path, 3)
-    players = menu.get_players
-    wheel = choose_wheel_path(menu)
-
-    for idx in range(3):
-        word = menu.get_word()
-        GameRound(players, word, wheel).play(idx)
-
-    word = menu.get_word()
-    final = Final(players, word)
-    print(final.play_final())
+    set_game_mode(3)
 
 
 def custom_game_mode():
@@ -78,16 +76,4 @@ def custom_game_mode():
         except ValueError:
             print('Value have to be a number between 2 - 6')
 
-    words_path = give_file_path(players_number)
-
-    menu = GameMenu(words_path, players_number)
-    players = menu.get_players
-    wheel = choose_wheel_path(menu)
-
-    for idx in range(players_number):
-        word = menu.get_word()
-        GameRound(players, word, wheel).play(idx)
-
-    word = menu.get_word()
-    final = Final(players, word)
-    print(final.play_final())
+    set_game_mode(players_number, players_number)
