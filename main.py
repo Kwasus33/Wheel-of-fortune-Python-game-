@@ -1,17 +1,11 @@
 from settings import choose_game_mode
-from settings import training_game_mode, standard_game_mode, custom_game_mode
+from settings import play_game
 
 
 def main():
 
     game_mode = choose_game_mode()
-
-    if game_mode == '1':
-        training_game_mode()
-    elif game_mode == '2':
-        standard_game_mode()
-    else:
-        custom_game_mode()
+    play_game(game_mode)
 
 
 if __name__ == "__main__":
@@ -35,9 +29,3 @@ if __name__ == "__main__":
     # RACZEJ NIE
     #   czy potrzebny jest warunek dający znać i uniemożliwiający
     #   wybór opcji buy kiedy w słowie skończą się samogłoski
-
-    # zanim skończą się litery alfabetu do wyboru w zgadywaniu
-    # to najpierw skończą się litery w słowie odgadywanym
-    # maksymalnie słowo może zawierać wszytskie litery alfabetu
-    # znaki nie będące literami są wyświetlane w reprezentacji hasła
-    # więc nie ma możliwości wyjścia poza zakres

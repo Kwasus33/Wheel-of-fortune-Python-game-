@@ -1,6 +1,7 @@
 from Words import Word
 import csv
 import json
+import os
 
 
 class MalformedWordDataError(Exception):
@@ -57,22 +58,13 @@ def read_from_csv(fh) -> list["Word"]:
     return list_of_words
 
 
-def clear_char(letter: str) -> str:
-    """
-    Returns char as a cleared of whitespace string
-    """
-    letter = str(letter)
-    letter = letter.rstrip().lstrip()
-    # if len(letter) != 1:
-    #     return 'Given character is to long'
-    # else:
-    #    return letter
-    return letter
-
-
 def clear_word(word) -> str:
     """
-    Returns cleared of leftside or rightside whitespace word or sentance
+    Returns cleared of leftside or rightside whitespace char, word or sentance
     """
-    word = str(word).rstrip().lstrip()
+    word = str(word).strip()
     return word
+
+
+def cls():
+    os.system('cls' if os.name == 'nt' else 'clear')

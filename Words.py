@@ -82,12 +82,12 @@ class Word():
         """
         Returns word representation with exposed guessed letters
         """
-        self.letter_guesses = letter_guesses if letter_guesses else []
+        letter_guesses = letter_guesses if letter_guesses else []
         word_repr = ''
 
         for letter in self._word:
-            if letter in self.letter_guesses or (letter not in CONSONANTS and
-                                                 letter not in VOCALS):
+            if letter in letter_guesses or (letter not in CONSONANTS and
+                                            letter not in VOCALS):
                 word_repr += letter
             else:
                 word_repr += '_'

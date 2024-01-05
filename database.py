@@ -21,7 +21,6 @@ class Database():
         """
         Creates instance of Database
         """
-        self.words = []
 
     def load_from_file(self, path: str) -> list:
         """
@@ -35,10 +34,10 @@ class Database():
         try:
             with open(path, 'r') as file_handle:
                 if ext == 'json':
-                    self.words = read_from_json(file_handle)
+                    words = read_from_json(file_handle)
                 else:
-                    self.words = read_from_csv(file_handle)
-            return self.words
+                    words = read_from_csv(file_handle)
+            return words
         except FileNotFoundError:
             raise FilePathNotFound("Could not open file")
         except PermissionError:
