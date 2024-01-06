@@ -45,7 +45,7 @@ def prepare_game(players_number: int, rounds_number: int = 3) -> None:
     else:
         menu = GameConfiguration(words_path, players_number)
 
-    if len(menu.words().words) < (rounds_number + 1):
+    if len(menu.words()) < (rounds_number + 1):
         raise NotEnoughWordsError("You cannot play the game.\n"
                                   "Given file with words to guess during "
                                   "gameplay has too little values")

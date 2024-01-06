@@ -1,5 +1,5 @@
 from player import Player
-from Words import Words, Word
+from Words import Word
 from Wheel_of_fortune import Wheel_of_fortune
 from Utilities import clear_word
 from database import Database
@@ -18,16 +18,22 @@ class GameConfiguration():
     param path: path to file with words to draw from during game
     type path: str
 
-    param words: object of class Words,
-                 which atribute is list of objects of Word class
-    type words: class Words
+    param words: list of words read from given path to file
+    type words: list of class Word objects
     """
     def __init__(self, path: str, num_of_players: int = 1) -> None:
         """
         Creates instance of GameConfiguration
         """
         self._players_num = num_of_players
-        self._words = Words(Database().load_from_file(path))
+        self._words = Database().load_from_file(path)
+
+    def words(self) -> list["Word"]:
+        """
+        Returns list of class Word objects,
+        contains all words that can be drawn
+        """
+        return self._words
 
     def create_players(self) -> list:
         """
@@ -38,13 +44,6 @@ class GameConfiguration():
         for idx in range(self._players_num):
             players.append(Player(idx+1))
         return players
-
-    def words(self) -> "Words":
-        """
-        Returns object of class Words,
-        containing all words that can be drawn
-        """
-        return self._words
 
     def choose_wheel_of_fortune(self) -> "Wheel_of_fortune":
         """
@@ -64,12 +63,11 @@ class GameConfiguration():
 
     def get_word(self) -> "Word":
         """
-        Draws and returns a Word object from Words object
-        Removes drawn Word from Words, so it cannot be drawn more than once
+        Draws and returns a Word object from list
+        Removes drawn Word from list, so it cannot be drawn more than once
         """
-        word = self._words.draw_word()
-        # word = random.choice(self.words())
-        self._words.words.remove(word)
+        word = random.choice(self._words)
+        self._words.remove(word)
         return word
 
 

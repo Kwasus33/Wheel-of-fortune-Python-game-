@@ -11,12 +11,6 @@ class FilePathIsDirectory(IsADirectoryError):
 
 
 class Database():
-    """
-    Class Database attributes:
-
-    param words: list of values read from file
-    param type: list
-    """
     def __init__(self) -> None:
         """
         Creates instance of Database

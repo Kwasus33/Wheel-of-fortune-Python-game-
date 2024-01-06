@@ -1,6 +1,3 @@
-import random
-
-
 VOCALS = ['A', 'Ą', 'E', 'Ę', 'I', 'O', 'Ó', 'U']
 CONSONANTS = ['B', 'C', 'Ć', 'D', 'F', 'G', 'H', 'J', 'K', 'L',
               'Ł', 'M', 'N', 'Ń', 'P', 'Q', 'R', 'S', 'Ś', 'T',
@@ -15,40 +12,16 @@ class WordNotGivenError(Exception):
     pass
 
 
-class EmptyWordListError(Exception):
-    pass
-
-
-class Words():
-    """
-    Class Words contains atributes:
-
-    param words: list of class Word objects
-    """
-    def __init__(self, words: list["Word"] = None) -> None:
-        """
-        Creates instance of Words
-        Raises EmptyWordListError when list is empty
-        """
-        self._words = words if words else []
-        if not self._words:
-            raise EmptyWordListError("List of Words to guess cannot be empty")
-
-    @property
-    def words(self):
-        """
-        Returns list of words
-        """
-        return self._words
-
-    def draw_word(self) -> "Word":
-        """
-        Draws and returns a word
-        """
-        return random.choice(self.words)
-
-
 class Word():
+    """
+    Class Word atributes:
+
+    param word:
+    type word: str
+
+    param category:
+    type category: str
+    """
     def __init__(self, word: str = None, category: str = None) -> None:
         """
         Creates instance of Word
