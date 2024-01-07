@@ -300,7 +300,9 @@ class GameRound():
         """
         Players spin the wheel till all consonants are guessed
         Then can only buy a vocal or guess the word
-        Returns if the word is guessed - one of the players wins the round
+        Returns if the word is guessed
+        Player who guessed the word wins the round - keeps money and rewards
+        Rest players balances are set to 0 and rewards are cleared
         """
         while self.word_consonants:
             player = self.wheel_spin()

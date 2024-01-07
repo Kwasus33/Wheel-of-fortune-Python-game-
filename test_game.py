@@ -6,6 +6,7 @@ from player import Player
 from Utilities import read_from_csv
 from database import Database, FilePathNotFound
 from game import GameConfiguration, GameRound, Final
+from settings import choose_game_mode, prepare_game, give_file_path
 from Words import VOCALS, CONSONANTS
 from io import StringIO
 import random
@@ -92,11 +93,6 @@ def test_database_errors():
     path = 'aaa/bb/c.txt'
     with pytest.raises(FilePathNotFound):
         Database().load_from_file(path)
-    # don't have any directory in repo to test it
-
-    # path = 'aaa/bb/c'
-    # with pytest.raises(FilePathIsDirectory):
-    #     Database().load_from_file(path)
 
 
 def test_create_wheel_of_fortune():
@@ -173,8 +169,48 @@ def test_clear_players_rewards_list():
     player.add_reward(random.choice(rewards))
     assert player.reward().pop() in rewards
     assert player.reward()
-    player.clear_reward()
+    player.remove_rewards()
     assert not player.reward()
+
+
+def test_choose_game_mode(monkeypatch):
+    monkeypatch.setattr('builtins.input', lambda answer: 1)
+    answer = choose_game_mode()
+    assert answer == '1'
+    inputs = iter([4, 2])
+    monkeypatch.setattr('builtins.input', lambda answer: next(inputs))
+    answer = choose_game_mode()
+    assert answer == '2'
+
+
+def test_prepare_game_out_of_range_game_mode():
+    with pytest.raises(Exception):
+        prepare_game('4')
+
+
+def test_give_file_path(monkeypatch):
+    monkeypatch.setattr('builtins.input', lambda path: 'words.txt')
+    answer = give_file_path(3)
+    assert answer == 'words.txt'
+
+
+def test_game_configuration_create_default_wheel_of_fortune(monkeypatch):
+    values = ['100', '150', '200', '250', '300', '350', '400', '500', '550',
+              'ZEGAREK', 'VOUCHER', 'BIŻUTERIA', 'BANKRUT', 'STOP']
+    game_config = GameConfiguration('words.txt', 3)
+    monkeypatch.setattr('builtins.input', lambda answer: '')
+    wheel = game_config.choose_wheel_of_fortune()
+    assert wheel.spin_wheel().word in values
+
+
+def test_game_configuration_create_own_wheel_of_fortune(monkeypatch):
+    values = ['100', '150', '200', '250', '300', '350', '400', '500', '550',
+              'ZEGAREK', 'VOUCHER', 'BIŻUTERIA', 'BANKRUT', 'STOP']
+    game_config = GameConfiguration('words.txt', 3)
+    inputs = iter(['t', 'values.txt'])
+    monkeypatch.setattr('builtins.input', lambda answer: next(inputs))
+    wheel = game_config.choose_wheel_of_fortune()
+    assert wheel.spin_wheel().word in values
 
 
 # tests work only when words.txt file is in repo
@@ -193,21 +229,24 @@ def test_game_configuration_get_word():
     assert game_config.get_word() not in game_config.words()
 
 
-def test_create_game_round():
-    values = ['100', '150', '200', '250', '300', '350', '400', '500', '550',
-              'ZEGAREK', 'VOUCHER', 'BIŻUTERIA', 'BANKRUT', 'STOP']
+def create_game_round():
     fh = StringIO('value\n100\n150\n200\n250\n300\n350\n400\n500\n550\n'
                   'ZEGAREK\nVOUCHER\nBIŻUTERIA\nBANKRUT\nSTOP')
     wheel = Wheel_of_fortune(read_from_csv(fh))
-    for word in wheel.values:
-        assert word.word in values
     player1 = Player(1)
     player2 = Player(2)
     players = [player1, player2]
     word = Word('porsche 911', 'auto')
     player_pointer = 1
-    game_round = GameRound(players, word, wheel, player_pointer)
-    assert player1, player2 in game_round.players
+    return GameRound(players, word, wheel, player_pointer)
+
+
+def test_create_game_round():
+    values = ['100', '150', '200', '250', '300', '350', '400', '500', '550',
+              'ZEGAREK', 'VOUCHER', 'BIŻUTERIA', 'BANKRUT', 'STOP']
+    game_round = create_game_round()
+    for word in game_round._wheel.values:
+        assert word.word in values
     for player in game_round._players:
         assert player.balance() == 0
         assert player.total_balance() == 0
@@ -221,35 +260,144 @@ def test_create_game_round():
 
 
 def test_game_round_update_word_repr():
-    fh = StringIO('value\n100\n150\n200\n250\n300\n350\n400\n500\n550\n'
-                  'ZEGAREK\nVOUCHER\nZESTAW GARNKÓW\nBIŻUTERIA\nBANKRUT\nSTOP')
-    wheel = Wheel_of_fortune(read_from_csv(fh))
-    player1 = Player(1)
-    player2 = Player(2)
-    players = [player1, player2]
-    word = Word('porsche 911', 'auto')
-    player_pointer = 1
-    game_round = GameRound(players, word, wheel, player_pointer)
+    game_round = create_game_round()
     game_round.word_repr = game_round._word_object.word_repr(['P', 'S', 'E'])
     assert game_round.word_repr == 'P__S__E 911'
 
 
-def test_create_final():
+def test_game_round_read_letter(monkeypatch):
+    game_round = create_game_round()
+    inputs = iter(['a', 'e', 'b'])
+    monkeypatch.setattr('builtins.input', lambda letter: next(inputs))
+    letter = game_round.read_letter(None)
+    assert letter == 'A'
+    letter = game_round.read_letter('150')
+    assert letter == 'B'
+
+
+def test_game_round_guess_correct_letter_win_money(monkeypatch):
+    game_round = create_game_round()
+    player1 = game_round.players[0]
+    monkeypatch.setattr('builtins.input', lambda letter: 'r')
+    is_good_guess = game_round.guess_letter(player1, '300')
+    assert is_good_guess
+    assert game_round.word_repr == '__R____ 911'
+    assert game_round.word_consonants == {'P': 1, 'S': 1, 'C': 1, 'H': 1}
+    assert game_round.letter_guesses == ['R']
+    assert player1.balance() == 300
+    monkeypatch.setattr('builtins.input', lambda letter: 'e')
+    is_good_guess = game_round.guess_letter(player1)
+    assert is_good_guess
+    assert game_round.word_repr == '__R___E 911'
+    assert game_round.word_consonants == {'P': 1, 'S': 1, 'C': 1, 'H': 1}
+    assert game_round.letter_guesses == ['R', 'E']
+
+
+def test_game_round_guess_correct_letter_get_reward(monkeypatch):
+    game_round = create_game_round()
+    player1 = game_round.players[0]
+    monkeypatch.setattr('builtins.input', lambda letter: 's')
+    is_good_guess = game_round.guess_letter(player1, 'ZEGAREK')
+    assert is_good_guess
+    assert game_round.word_repr == '___S___ 911'
+    assert game_round.word_consonants == {'P': 1, 'R': 1, 'C': 1, 'H': 1}
+    assert game_round.letter_guesses == ['S']
+    assert 'ZEGAREK' in player1.reward()
+    assert player1.balance() == 0
+
+
+def test_game_round_guess_incorrect_letter(monkeypatch):
+    game_round = create_game_round()
+    player1 = game_round.players[0]
+    monkeypatch.setattr('builtins.input', lambda letter: 'w')
+    is_good_guess = game_round.guess_letter(player1, '300')
+    assert not is_good_guess
+    assert game_round.word_repr == '_______ 911'
+    assert game_round.word_consonants == {'P': 1, 'R': 1, 'S': 1,
+                                          'C': 1, 'H': 1}
+    assert game_round.letter_guesses == ['W']
+
+
+def test_game_round_guess_word_correctly(monkeypatch):
+    game_round = create_game_round()
+    monkeypatch.setattr('builtins.input', lambda letter: 'porSchE 911')
+    is_good_guess = game_round.guess_word()
+    assert is_good_guess
+    assert game_round.word_repr == 'PORSCHE 911'
+    assert game_round.word_consonants == {}
+
+
+def test_game_round_guess_word_incorrectly(monkeypatch):
+    game_round = create_game_round()
+    monkeypatch.setattr('builtins.input', lambda letter: 'bugatti 911')
+    is_good_guess = game_round.guess_word()
+    assert not is_good_guess
+    assert game_round.word_repr == '_______ 911'
+    assert game_round.word_consonants == {'P': 1, 'R': 1, 'S': 1,
+                                          'C': 1, 'H': 1}
+
+
+def test_game_round_buy_vocal(monkeypatch):
+    game_round = create_game_round()
+    player1 = game_round.players[0]
+    player1.set_balance(300)
+    assert player1.balance() == 300
+    monkeypatch.setattr('builtins.input', lambda letter: 'e')
+    is_good_guess = game_round.buy_vocal(player1)
+    assert player1.balance() == 100
+    assert is_good_guess
+    assert game_round.word_repr == '______E 911'
+    assert game_round.word_consonants == {'P': 1, 'R': 1, 'S': 1,
+                                          'C': 1, 'H': 1}
+    assert game_round.letter_guesses == ['E']
+
+
+def test_game_round_choose_action(monkeypatch):
+    game_round = create_game_round()
+    player1 = game_round.players[0]
+    assert game_round.word_consonants == {'P': 1, 'R': 1, 'S': 1,
+                                          'C': 1, 'H': 1}
+    inputs = iter(['B', 'S'])
+    monkeypatch.setattr('builtins.input', lambda letter: next(inputs))
+    answer = game_round.choose_action(player1)
+    assert answer == 'S'
+    player1.set_balance(500)
+    monkeypatch.setattr('builtins.input', lambda letter: 'b')
+    answer = game_round.choose_action(player1)
+    assert answer == 'B'
+
+
+def test_game_round_win_money(monkeypatch):
+    game_round = create_game_round()
+    player2 = game_round.players[1]
+    inputs = iter(['r', 'b', 'e', 's'])
+    monkeypatch.setattr('builtins.input', lambda letter: next(inputs))
+    is_good_guess = game_round.win_money('300', player2)
+    assert is_good_guess
+    assert game_round.word_repr == '__R___E 911'
+    assert game_round.word_consonants == {'P': 1, 'S': 1, 'C': 1, 'H': 1}
+    assert game_round.letter_guesses == ['R', 'E']
+    assert player2.id == 2
+    assert player2.balance() == 100
+
+
+def create_final():
     player1 = Player(1)
     player2 = Player(2)
     players = [player1, player2]
     word = Word('porsche 911', 'auto')
-    final = Final(players, word)
+    return Final(players, word)
+
+
+def test_create_final():
+    final = create_final()
     for letter in final.drawn_letters:
         assert letter in (VOCALS + CONSONANTS)
 
 
 def test_final_find_best_player():
-    player1 = Player(1)
-    player2 = Player(2)
-    players = [player1, player2]
-    word = Word('porsche 911', 'auto')
-    final = Final(players, word)
+    final = create_final()
+    player1, player2 = final._players
     assert final.find_best_player() is None
     final._players[1].add_to_total_balance(500)
     assert final.find_best_player() == player2
@@ -258,3 +406,12 @@ def test_final_find_best_player():
     assert final.find_best_player() == player1
     final._players[1].add_reward('PRALKA')
     assert final.find_best_player() is None
+
+
+def test_final_choose_letters_set_with_mistakes(monkeypatch):
+    final = create_final()
+    drawn_letters = [letter for letter in final.drawn_letters]
+    inputs = iter(['r', 'b', 'e', 's', 'a'])
+    monkeypatch.setattr('builtins.input', lambda letter: next(inputs))
+    final.choose_letters_set()
+    assert drawn_letters + ['R', 'B', 'S', 'A'] == final.drawn_letters

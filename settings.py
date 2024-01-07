@@ -33,7 +33,7 @@ def give_file_path(number_of_rounds: int) -> str:
     return answer
 
 
-def prepare_game(players_number: int, rounds_number: int = 3) -> None:
+def play_game(players_number: int, rounds_number: int = 3) -> None:
     """
     Manages whole gameplay,
     Creates instances of GameConfiguration, GameRound and Final
@@ -62,7 +62,7 @@ def prepare_game(players_number: int, rounds_number: int = 3) -> None:
     print(final.play_final())
 
 
-def play_game(game_mode: str) -> None:
+def prepare_game(game_mode: str) -> None:
     """
     Depending on chosen game mode, calls prepare_game() function
     Game mode 1: 1 player, 3 rounds + final
@@ -71,9 +71,9 @@ def play_game(game_mode: str) -> None:
                  number rounds same as number of players + final
     """
     if game_mode == '1':
-        prepare_game(1)
+        play_game(1)
     elif game_mode == '2':
-        prepare_game(3)
+        play_game(3)
     elif game_mode == '3':
         players_number = 0
         while players_number <= 1 or players_number > 6:
@@ -81,7 +81,7 @@ def play_game(game_mode: str) -> None:
             try:
                 players_number = int(clear_word(input()))
             except ValueError:
-                print('Value have to be a number (between 2 and 6)')
-        prepare_game(players_number, players_number)
+                print('Value have to be a number')
+        play_game(players_number, players_number)
     else:
         raise Exception("Given wrong 'game mode' option")
