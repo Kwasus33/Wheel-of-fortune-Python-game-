@@ -10,7 +10,7 @@ class MalformedWordDataError(Exception):
 
 class InvalidWordDataError(Exception):
     def __init__(self, item) -> None:
-        super().__init__("Invalid person data detected")
+        super().__init__("Invalid wordlist data detected")
         self.item = item
 
 
@@ -29,8 +29,6 @@ def read_from_json(fh) -> list["Word"]:
             value = clear_word(item['value'])
             list_of_words.append(Word(value, key))
             word = Word(value, key)
-        except KeyError as e:
-            raise MalformedWordDataError('Missing key in file') from e
         except Exception as e:
             raise InvalidWordDataError(item) from e
         list_of_words.append(word)
