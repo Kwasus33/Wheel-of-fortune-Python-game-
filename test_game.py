@@ -202,7 +202,6 @@ def test_game_configuration_create_own_wheel_of_fortune(monkeypatch):
     assert wheel.spin_wheel().word in values
 
 
-# tests work only when words.txt file is in repo
 def test_game_configuration_create_players():
     game_config = GameConfiguration('words.txt', 3)
     players = game_config.create_players()
@@ -248,13 +247,15 @@ def test_create_game_round():
     assert not game_round.letter_guesses()
     consonants = {'P': 1, 'R': 1, 'S': 1, 'C': 1, 'H': 1}
     assert game_round.word_consonants() == consonants
-    assert game_round.word_repr == '_______ 911'
+    assert game_round.word_repr() == '_______ 911'
 
 
 def test_game_round_update_word_repr():
     game_round = create_game_round()
-    game_round.word_repr = game_round._word_object.word_repr(['P', 'S', 'E'])
-    assert game_round.word_repr == 'P__S__E 911'
+    game_round.set_word_repr(
+        game_round._word_object.word_repr(['P', 'S', 'E'])
+        )
+    assert game_round.word_repr() == 'P__S__E 911'
 
 
 def test_game_round_read_letter(monkeypatch):
@@ -273,14 +274,14 @@ def test_game_round_guess_correct_letter_win_money(monkeypatch):
     monkeypatch.setattr('builtins.input', lambda letter: 'r')
     is_good_guess = game_round.guess_letter(player1, '300')
     assert is_good_guess
-    assert game_round.word_repr == '__R____ 911'
+    assert game_round.word_repr() == '__R____ 911'
     assert game_round.word_consonants() == {'P': 1, 'S': 1, 'C': 1, 'H': 1}
     assert game_round.letter_guesses() == ['R']
     assert player1.balance() == 300
     monkeypatch.setattr('builtins.input', lambda letter: 'e')
     is_good_guess = game_round.guess_letter(player1)
     assert is_good_guess
-    assert game_round.word_repr == '__R___E 911'
+    assert game_round.word_repr() == '__R___E 911'
     assert game_round.word_consonants() == {'P': 1, 'S': 1, 'C': 1, 'H': 1}
     assert game_round.letter_guesses() == ['R', 'E']
 
@@ -291,7 +292,7 @@ def test_game_round_guess_correct_letter_get_reward(monkeypatch):
     monkeypatch.setattr('builtins.input', lambda letter: 's')
     is_good_guess = game_round.guess_letter(player1, 'ZEGAREK')
     assert is_good_guess
-    assert game_round.word_repr == '___S___ 911'
+    assert game_round.word_repr() == '___S___ 911'
     assert game_round.word_consonants() == {'P': 1, 'R': 1, 'C': 1, 'H': 1}
     assert game_round.letter_guesses() == ['S']
     assert 'ZEGAREK' in player1.reward()
@@ -304,7 +305,7 @@ def test_game_round_guess_incorrect_letter(monkeypatch):
     monkeypatch.setattr('builtins.input', lambda letter: 'w')
     is_good_guess = game_round.guess_letter(player1, '300')
     assert not is_good_guess
-    assert game_round.word_repr == '_______ 911'
+    assert game_round.word_repr() == '_______ 911'
     assert game_round.word_consonants() == {'P': 1, 'R': 1, 'S': 1,
                                             'C': 1, 'H': 1}
     assert game_round.letter_guesses() == ['W']
@@ -315,7 +316,7 @@ def test_game_round_guess_word_correctly(monkeypatch):
     monkeypatch.setattr('builtins.input', lambda letter: 'porSchE 911')
     is_good_guess = game_round.guess_word()
     assert is_good_guess
-    assert game_round.word_repr == 'PORSCHE 911'
+    assert game_round.word_repr() == 'PORSCHE 911'
     assert game_round.word_consonants() == {}
 
 
@@ -324,7 +325,7 @@ def test_game_round_guess_word_incorrectly(monkeypatch):
     monkeypatch.setattr('builtins.input', lambda letter: 'bugatti 911')
     is_good_guess = game_round.guess_word()
     assert not is_good_guess
-    assert game_round.word_repr == '_______ 911'
+    assert game_round.word_repr() == '_______ 911'
     assert game_round.word_consonants() == {'P': 1, 'R': 1, 'S': 1,
                                             'C': 1, 'H': 1}
 
@@ -338,7 +339,7 @@ def test_game_round_buy_vocal(monkeypatch):
     is_good_guess = game_round.buy_vocal(player1)
     assert player1.balance() == 100
     assert is_good_guess
-    assert game_round.word_repr == '______E 911'
+    assert game_round.word_repr() == '______E 911'
     assert game_round.word_consonants() == {'P': 1, 'R': 1, 'S': 1,
                                             'C': 1, 'H': 1}
     assert game_round.letter_guesses() == ['E']
@@ -366,7 +367,7 @@ def test_game_round_win_money(monkeypatch):
     monkeypatch.setattr('builtins.input', lambda letter: next(inputs))
     is_good_guess = game_round.win_money('300', player2)
     assert is_good_guess
-    assert game_round.word_repr == '__R___E 911'
+    assert game_round.word_repr() == '__R___E 911'
     assert game_round.word_consonants() == {'P': 1, 'S': 1, 'C': 1, 'H': 1}
     assert game_round.letter_guesses() == ['R', 'E']
     assert player2.id == 2
@@ -389,14 +390,14 @@ def test_create_final():
 
 def test_final_find_best_player():
     final = create_final()
-    player1, player2 = final._players
+    player1, player2 = final.players
     assert final.find_best_player() is None
-    final._players[1].add_to_total_balance(500)
+    final.players[1].add_to_total_balance(500)
     assert final.find_best_player() == player2
-    final._players[0].add_to_total_balance(500)
+    final.players[0].add_to_total_balance(500)
     player1.add_reward('ZEGAREK')
     assert final.find_best_player() == player1
-    final._players[1].add_reward('PRALKA')
+    final.players[1].add_reward('PRALKA')
     assert final.find_best_player() is None
 
 

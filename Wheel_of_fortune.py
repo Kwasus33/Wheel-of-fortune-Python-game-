@@ -33,4 +33,4 @@ class Wheel_of_fortune():
         """
         Spins a wheel and returns a drawn value
         """
-        return random.choice(self.values)
+        return random.choice(self._values)

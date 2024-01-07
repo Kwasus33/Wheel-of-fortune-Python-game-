@@ -28,10 +28,8 @@ def read_from_json(fh) -> list["Word"]:
                 key = None
             value = clear_word(item['value'])
             list_of_words.append(Word(value, key))
-            word = Word(value, key)
         except Exception as e:
             raise InvalidWordDataError(item) from e
-        list_of_words.append(word)
     return list_of_words
 
 

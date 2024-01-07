@@ -1,5 +1,6 @@
 from settings import choose_game_mode
 from settings import prepare_game
+from Utilities import cls
 from game import GameRound, Final
 
 
@@ -7,9 +8,9 @@ def main():
 
     game_mode = choose_game_mode()
     game_config, rounds_number = prepare_game(game_mode)
-
     players = game_config.create_players()
     wheel = game_config.choose_wheel_of_fortune()
+    cls()
 
     for idx in range(rounds_number):
         word = game_config.get_word()
