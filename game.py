@@ -66,8 +66,8 @@ class GameConfiguration():
         Draws and returns a Word object from list
         Removes drawn Word from list, so it cannot be drawn more than once
         """
-        word = random.choice(self._words)
-        self._words.remove(word)
+        word = random.choice(self.words())
+        self.words().remove(word)
         return word
 
 
@@ -107,23 +107,56 @@ class GameRound():
         self._word_object = word
         self._wheel = wheel
         self.word_repr = self._word_object.word_repr()
-        self.player_pointer = player_pointer
+        self._player_pointer = player_pointer
 
-        self.letter_guesses = []
+        self._letter_guesses = []
 
-        self.word_consonants = {}
+        self._word_consonants = {}
 
         for letter in self._word_object.word:
             if letter in CONSONANTS:
-                if letter in self.word_consonants:
-                    self.word_consonants[letter] += 1
+                if letter in self._word_consonants:
+                    self._word_consonants[letter] += 1
                 else:
-                    self.word_consonants[letter] = 1
+                    self._word_consonants[letter] = 1
 
     @property
     def players(self) -> list:
-        "Returns list of players"
+        """Returns list of players"""
         return self._players
+
+    @property
+    def wheel(self) -> "Wheel_of_fortune":
+        """Returns wheel of fortune"""
+        return self._wheel
+
+    @property
+    def word_object(self) -> "Word":
+        """Returns word_object"""
+        return self._word_object
+
+    def word_consonants(self) -> dict:
+        """Returns word_consonants"""
+        return self._word_consonants
+
+    def set_word_consonants_empty(self) -> None:
+        """Sets word_consonants as empty dict"""
+        self._word_consonants = {}
+
+    def player_pointer(self) -> int:
+        """Returns player pointer"""
+        return self._player_pointer
+
+    def move_player_pointer(self, shift: int):
+        """Moves player pointer to point another player"""
+        self._player_pointer += shift
+
+    def set_player_pointer(self, value: int):
+        self._player_pointer = value
+
+    def letter_guesses(self) -> list:
+        """Returns list of already used letters while guessing"""
+        return self._letter_guesses
 
     def read_letter(self, value) -> str:
         """
@@ -157,23 +190,23 @@ class GameRound():
 
         letter = self.read_letter(value)
 
-        if letter in self.letter_guesses:
+        if letter in self.letter_guesses():
             print("Letter was already given. You lose a turn")
             return is_good_guess
 
-        self.letter_guesses.append(letter)
+        self.letter_guesses().append(letter)
 
-        if letter in self._word_object.word:
+        if letter in self.word_object.word:
             is_good_guess = True
-            self.word_repr = self._word_object.word_repr(self.letter_guesses)
+            self.word_repr = self.word_object.word_repr(self.letter_guesses())
             if letter in CONSONANTS:
                 if value.isnumeric():
-                    amount = self.word_consonants[letter] * int(value)
+                    amount = self.word_consonants()[letter] * int(value)
                     player.add_to_balance(amount)
                 else:
                     player.add_reward(value)
                     # tu dodaje nagrodę do ekwipunku gracza
-                self.word_consonants.pop(letter)
+                self.word_consonants().pop(letter)
         else:
             print("Your guess is incorrect")
 
@@ -184,11 +217,11 @@ class GameRound():
         Returns True if player correctly guesses the word, else False
         """
         word_guess = clear_word(input(str('Guess the word\n'))).upper()
-        if word_guess == self._word_object.word:
+        if word_guess == self.word_object.word:
             print('\nYour guess is correct, you win the round\n')
             is_good_guess = True
-            self.word_consonants = {}
-            self.word_repr = self._word_object.word
+            self.set_word_consonants_empty()
+            self.word_repr = self.word_object.word
         else:
             print('\nYour guess is not correct\n')
             is_good_guess = False
@@ -225,12 +258,12 @@ class GameRound():
          - buy a vocal (B), spin the wheel (S) or guess the word (G)
         """
         if player.balance() >= 200:
-            if self.word_consonants:
+            if self.word_consonants():
                 range = ['B', 'S', 'G']
             else:
                 range = ['B', 'G']
         else:
-            if self.word_consonants:
+            if self.word_consonants():
                 range = ['S', 'G']
             else:
                 range = ['G']
@@ -250,7 +283,7 @@ class GameRound():
 
         while is_good_guess:
             print(self.word_repr)
-            if self.word_consonants:
+            if self.word_consonants():
                 answer = self.choose_action(player)
                 if answer == 'B':
                     is_good_guess = self.buy_vocal(player)
@@ -270,10 +303,10 @@ class GameRound():
         Maintains forward actions dependent on drawn value
         Returns currently playing player instance
         """
-        self.player_pointer = (self.player_pointer % len(self._players))
-        player = self._players[self.player_pointer]
+        self.set_player_pointer((self.player_pointer() % len(self.players)))
+        player = self.players[self.player_pointer()]
 
-        print('\n' + self._word_object.category)
+        print('\n' + self.word_object.category)
         print(self.word_repr + '\n')
 
         print(f'Player {player.id} turn')
@@ -281,18 +314,19 @@ class GameRound():
         print('Press any button to spin the wheel')
         input()
 
-        wheel_item = self._wheel.spin_wheel()
+        wheel_item = self.wheel.spin_wheel()
         value = wheel_item.word
         print(value)
 
         if value == 'BANKRUT':
             player.set_balance(0)
-            self.player_pointer += 1
+            player.remove_rewards()
+            self.move_player_pointer(1)
         elif value == 'STOP':
-            self.player_pointer += 1
+            self.move_player_pointer(1)
         else:
             if not self.win_money(value, player):
-                self.player_pointer += 1
+                self.move_player_pointer(1)
 
         return player
 
@@ -304,17 +338,17 @@ class GameRound():
         Player who guessed the word wins the round - keeps money and rewards
         Rest players balances are set to 0 and rewards are cleared
         """
-        while self.word_consonants:
+        while self.word_consonants():
             player = self.wheel_spin()
 
-        if self.word_repr != self._word_object.word:
+        if self.word_repr != self.word_object.word:
             print("\nThere's no more consonants in the word\n")
             print(f'{self.word_repr}\n')
 
-        while self.word_repr != self._word_object.word:
-
-            self.player_pointer = (self.player_pointer % len(self._players))
-            player = self._players[self.player_pointer]
+        while self.word_repr != self.word_object.word:
+            self.set_player_pointer(
+                (self.player_pointer() % len(self.players)))
+            player = self.players[self.player_pointer()]
 
             print(f'Player {player.id} turn\n')
 
@@ -323,11 +357,11 @@ class GameRound():
             if answer == 'B':
                 is_good_guess = self.buy_vocal(player)
                 if not is_good_guess:
-                    self.player_pointer += 1
+                    self.move_player_pointer(1)
                 print(self.word_repr)
             elif answer == 'G':
                 if not self.guess_word():
-                    self.player_pointer += 1
+                    self.move_player_pointer(1)
                     print(self.word_repr)
             else:
                 # można tu coś więcej pomyśleć jak obsłużyć else:
@@ -340,11 +374,14 @@ class GameRound():
         print(f'\nPlayer {player_info} wins the round\n')
 
         player.add_to_total_balance(player.balance())
+        player.set_total_rewards(player.reward())
 
-        for player in self._players:
+        for player in self.players:
             player.set_balance(0)
+            player.remove_rewards()
             print(f'Player {player.id}')
             print(f'{player.total_balance()}\n')
+            print(f'{player.total_rewards()}\n')
 
 
 class Final():
@@ -420,16 +457,18 @@ class Final():
 
         for i in range(3):
             info = 'first' if i == 0 else 'second' if i == 1 else 'third'
-            letter = clear_word(input(str(f'Choose {info} consonant'))).upper()
+            letter = clear_word(
+                input(str(f'Choose {info} consonant\n'))
+                ).upper()
             while letter not in CONSONANTS:
                 print('Given invalid value - not a consonant')
-                letter = clear_word(input(str('Choose a consonant'))).upper()
+                letter = clear_word(input(str('Choose a consonant\n'))).upper()
             self.drawn_letters.append(letter)
 
-        letter = clear_word(input(str('Choose a vocal'))).upper()
+        letter = clear_word(input(str('Choose a vocal\n'))).upper()
         while letter not in VOCALS:
             print('Given invalid value - not a vocal')
-            letter = clear_word(input(str('Choose a vocal'))).upper()
+            letter = clear_word(input(str('Choose a vocal\n'))).upper()
         self.drawn_letters.append(letter)
 
     def play_final(self) -> str:

@@ -6,10 +6,6 @@ class EmptyWheelOfFortuneError(Exception):
     pass
 
 
-class Wheel_data():
-    pass
-
-
 class Wheel_of_fortune():
     """
     Class Wheel of fortune contains attributes:

@@ -1,5 +1,5 @@
 from Utilities import clear_word, cls
-from game import GameConfiguration, GameRound, Final
+from game import GameConfiguration
 
 
 class NotEnoughWordsError(Exception):
@@ -33,7 +33,8 @@ def give_file_path(number_of_rounds: int) -> str:
     return answer
 
 
-def play_game(players_number: int, rounds_number: int = 3) -> None:
+def config_game(players_number: int,
+                rounds_number: int = 3) -> "GameConfiguration":
     """
     Manages whole gameplay,
     Creates instances of GameConfiguration, GameRound and Final
@@ -41,28 +42,18 @@ def play_game(players_number: int, rounds_number: int = 3) -> None:
     words_path = give_file_path(rounds_number)
 
     if players_number == 1:
-        menu = GameConfiguration(words_path)
+        game_config = GameConfiguration(words_path)
     else:
-        menu = GameConfiguration(words_path, players_number)
+        game_config = GameConfiguration(words_path, players_number)
 
-    if len(menu.words()) < (rounds_number + 1):
+    if len(game_config.words()) < (rounds_number + 1):
         raise NotEnoughWordsError("You cannot play the game.\n"
                                   "Given file with words to guess during "
                                   "gameplay has too little values")
-    players = menu.create_players()
-    wheel = menu.choose_wheel_of_fortune()
-
-# może przenieść pętle do maina
-    for idx in range(rounds_number):
-        word = menu.get_word()
-        GameRound(players, word, wheel, idx).play()
-
-    word = menu.get_word()
-    final = Final(players, word)
-    print(final.play_final())
+    return game_config
 
 
-def prepare_game(game_mode: str) -> None:
+def prepare_game(game_mode: str) -> ("GameConfiguration", int):
     """
     Depending on chosen game mode, calls prepare_game() function
     Game mode 1: 1 player, 3 rounds + final
@@ -71,9 +62,11 @@ def prepare_game(game_mode: str) -> None:
                  number rounds same as number of players + final
     """
     if game_mode == '1':
-        play_game(1)
+        config = config_game(1)
+        rounds_number = 3
     elif game_mode == '2':
-        play_game(3)
+        config = config_game(3)
+        rounds_number = 3
     elif game_mode == '3':
         players_number = 0
         while players_number <= 1 or players_number > 6:
@@ -82,6 +75,8 @@ def prepare_game(game_mode: str) -> None:
                 players_number = int(clear_word(input()))
             except ValueError:
                 print('Value have to be a number')
-        play_game(players_number, players_number)
+        config = config_game(players_number, players_number)
+        rounds_number = players_number
     else:
         raise Exception("Given wrong 'game mode' option")
+    return config, rounds_number

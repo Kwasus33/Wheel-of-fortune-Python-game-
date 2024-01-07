@@ -68,10 +68,11 @@ Interfejs gry może być tekstowy lub graficzny. W przypadku interfejsu tekstowe
 * znajdują się tu funkcję odpwiedzialne za czytanie danych z plików, czyszcenie odpowiedzi podawanych przez graczy (w inputach) oraz danych czytanych z plików oraz czyszczenie okna terminala
 
 ## INSTRUKCJA UŻYTKOWNIKA
+* W celu rozpoczęcia gry należy uruchomić plik main.py
 * Po uruchomieniu programu należy wybrać jeden z 3 dostępnych trybów gry, tryb 2 to tryb standardowy (opisany w poleceniu) składający się z 3 rund zasadniczych oraz finału, rozgrywany przez 3 graczy (tak jak w telewizyjnym kole fortuny). Dodane zostały również 2 dodatkowe tryby - tryb 1 treningowy, składający się z 3 rund oraz finału rozgrywanych przez 1 gracza oraz tryb 3, konfigurowalny, w którym można wybrać od 2 do 6 graczy, a liczba rund jest taka jak liczba graczy
-* Następnie należy podać ścieżkę do pliku zawierającego hasła do losowania w rozgrywce, zostanie wyświetlona minimalna liczba haseł wymaganych w pliku, jeżeli podany plik nie zawiera wymaganej liczby haseł zostanie wzniesiony wyjątek informujący, że podano scieżkę do niepoprawnego pliku
+* Następnie należy podać ścieżkę do pliku zawierającego hasła do losowania w rozgrywce, zostanie wyświetlona minimalna liczba haseł wymaganych w pliku, jeżeli podany plik nie zawiera wymaganej liczby haseł zostanie wzniesiony wyjątek informujący, że podano scieżkę do niepoprawnego pliku, hasła w pliku mogą zawierać tylko polskie lub angielskie znaki (do testowania działania programu można wykorzystać znajdujący się w repozytorium plik 'words.txt' lub 'words.json')
 * podawane pliki mogą być w formacie .txt (w konwencji csv) lub .json
-* plik z hasłami powinien być sformatowany
+* plik z hasłami powinien być sformatowany (przykład dla .txt, adekwatnie przygotować .jsona):
     key,value
     'auto','porsche'
     'potrawa','kotlet schabowy'
@@ -80,7 +81,7 @@ Interfejs gry może być tekstowy lub graficzny. W przypadku interfejsu tekstowe
 * gdzie value to słowo a key to kategoria słowa, obie wartości są wymagane, w przypadku braku jednej z nich zostanie wzniesiony wyjątek
 * następnie należy wybrać czy wartości na kole fortuny mają być załadowane z własnego pliku czy z pliku z wartościami standardowymi (values.txt), w przypadku wybrania chęci podania ścieżki do pliku z własnymi wartościami,
 * podawane pliki mogą być w formacie .txt lub .json
-* należy podać plik sformatowany:
+* należy podać plik sformatowany (przykład dla .txt, adekwatnie przygotować .jsona):
     value
     100
     300
@@ -90,9 +91,11 @@ Interfejs gry może być tekstowy lub graficzny. W przypadku interfejsu tekstowe
     STOP
 * plik powinien zawierać pola BANKRUT, STOP, kwoty punktowe (np. 350, 500), nazwy nagród (np. ZESTAW GARNKÓW, VOUCHER)
 * następnie rozpoczyna się rozgrywka, gracze powinni postępować zgodnie z wyświetlanymi komunikatami
+* **Proszę nie usuwać, ani nie przenosić z repozytorium plików 'values.txt' oraz 'words.txt' - są to pliki odpowiednio konfiguracyjny i testowy**
 
 ## CZĘŚĆ REFLEKSYJNA
 * udało się zaimplementować działającą grę 'koło-fortuny'
-* względem pierwotnego pomysłu i polecenia zaimplementowane zostały dodatkowo 2 tryby gry oraz możliwość konfiguracji wartości koła fortuny
-* napotaknym problemem były zdecydowanie warunki brzegowe w logice gry (np. odgadywaniu wylosowanych haseł) - co zmusiło mnie do wielokrotnej modyfikacji logiki
-* wymagające było również zaimplementowanie przejrzystego wyświetlaniania gry w terminalu
+* względem pierwotnego pomysłu i polecenia zaimplementowane zostały 2 dodatkowe tryby gry oraz możliwość konfiguracji wartości koła fortuny, również zmodyfikowane zostały funkcje odpowiedzialne za reprezentacja losowanych haseł oraz poprawiona została stylistyka kodu (względem pierwszych wersji projektu)
+* napotaknym problemem była analiza wszystkich warunków brzegowych w logice gry (np. sytuacje gdy kończą się samogłoski do kupienia a zostają spółgłoski do zgadnięcia czy gdy po wszystkich rundach zasadniczych jest więcej niż jeden najlepszy gracz) - co zmusiło mnie do wielokrotnej modyfikacji logiki
+* wymagające było również zaimplementowanie przejrzystego wyświetlaniania komunikatów gry w terminalu
+* nieststety nie udało się przygotować gui czy rozbudować rozgrywki o dodatkowe rundy (niewymagane w poleceniu), np. takie jak w telewizyjnym kole fortuny - powodem była niewystarczająca ilość czasu

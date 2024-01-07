@@ -24,10 +24,10 @@ class Database():
         Raises PermissionError if user cannot open the file
         Raises IsADirectoryError if path leads to directory not file
         """
-        ext = os.path.splitext(path)[:-1]
+        file_name, ext = os.path.splitext(path)
         try:
             with open(path, 'r') as file_handle:
-                if ext == 'json':
+                if ext == '.json':
                     words = read_from_json(file_handle)
                 else:
                     words = read_from_csv(file_handle)

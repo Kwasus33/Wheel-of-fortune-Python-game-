@@ -1,3 +1,0 @@
-key,value
-powitanie,hejka
-część mowy,imiesłów
